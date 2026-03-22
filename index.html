@@ -1,1 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediaCloud Pro</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:Arial,sans-serif; background:#0a0a0a; color:#fff; }
+    header {
+      background:#141414; padding:16px 32px;
+      display:flex; align-items:center; justify-content:space-between;
+      border-bottom:3px solid #c8f135;
+    }
+    header h1 { color:#c8f135; font-size:1.5rem; }
+    header span { color:#888; font-size:13px; }
+    .upload-zone {
+      border:2px dashed #c8f135; border-radius:8px;
+      padding:40px; text-align:center; margin:24px;
+      cursor:pointer; background:#141414; transition:background 0.2s;
+    }
+    .upload-zone:hover { background:#1e1e1e; }
+    .upload-zone p.title { font-size:1.2rem; color:#c8f135; margin-bottom:8px; }
+    .upload-zone p.sub { color:#888; font-size:13px; }
+    .btn {
+      background:#c8f135; color:#000; border:none;
+      padding:10px 20px; border-radius:6px;
+      cursor:pointer; font-weight:bold; font-size:14px;
+    }
+    .btn:hover { background:#9ec016; }
+    .btn-red { background:#cc3333; color:#fff; }
+    .btn-red:hover { background:#aa1111; }
+    .status { padding:8px 24px; font-size:13px; color:#c8f135; min-height:28px; }
+    .status.error { color:#cc3333; }
+    .gallery {
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(200px,1fr));
+      gap:16px; padding:0 24px 24px;
+    }
+    .gallery-title {
+      padding:0 24px 12px; color:#c8f135;
+      font-size:14px; font-weight:bold; letter-spacing:2px;
+    }
+    .card {
+      background:#1e1e1e; border:1px solid #c8f135;
+      border-radius:8px; overflow:hidden;
+    }
+    .card-preview {
+      width:100%; height:140px; object-fit:cover;
+      display:block; background:#141414;
+    }
+    .card-placeholder {
+      width:100%; height:140px; background:#141414;
+      display:flex; align-items:center;
+      justify-content:center; font-size:2.5rem;
+    }
+    .card-body { padding:10px; }
+    .card-body h3 { font-size:12px; color:#c8f135; margin-bottom:4px; word-break:break-all; }
+    .card-body .tags { font-size:11px; color:#888; margin-bottom:8px; }
+    .card-actions { display:flex; gap:6px; }
+    .btn-sm { font-size:11px; padding:5px 10px; }
+    .modal-overlay {
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,0.85);
+      justify-content:center; align-items:center; z-index:1000;
+    }
+    .modal-overlay.active { display:flex; }
+    .modal {
+      background:#1e1e1e; border:1px solid #c8f135;
+      border-radius:8px; padding:24px; width:420px;
+    }
+    .modal h2 { color:#c8f135; margin-bottom:16px; font-size:1rem; }
+    .modal input {
+      background:#141414; border:1px solid #444; color:#fff;
+      padding:8px; border-radius:4px; width:100%;
+      margin-bottom:10px; font-size:13px;
+    }
+    .modal-actions { display:flex; gap:8px; margin-top:4px; }
+    .empty { color:#888; padding:24px; font-size:13px; }
+  </style>
+</head>
+<body>
 
+<header>
+  <h1>⚡ MediaCloud Pro</h1>
+  <span>👤 demo-user-001</span>
+</header>
+
+<div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+  <p class="title">⬆ Click or Drag &amp; Drop to Upload</p>
+  <p class="sub">Images, Videos, Audio — stored in Azure Blob Storage</p>
+  <input type="file" id="fileInput" style="display:none"
+         accept="image/*,video/*,audio/*" onchange="handleUpload(event)"/>
+</div>
+
+<div class="status" id="status"></div>
+<div class="gallery-title">MEDIA GALLERY</div>
+<div class="gallery" id="gallery">
+  <p class="empty">Loading your media...</p>
+</div>
+
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <h2>✏️ Edit Asset</h2>
+    <input type="text" id="editFileName" placeholder="File name"/>
+    <input type="text" id="editTags" placeholder="Tags (comma separated)"/>
+    <div class="modal-actions">
+      <button class="btn" onclick="saveEdit()">Save</button>
+      <button class="btn btn-red" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const UPLOAD_URL  = "https://prod-05.spaincentral.logic.azure.com:443/workflows/f9514801f7d24174b297c3a28c35a585/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=i_cxwvSIOe7UkJQXKUZrEs8qABLTMh4c4FfJYNg2vm0";
+  const GET_ALL_URL = "https://prod-28.spaincentral.logic.azure.com:443/workflows/a5f92eec70bb412f896a01c37d026b44/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=QzHf1fdnQgW6Sy88xOckIW9zQLJ-qRU33P9nbLoO_vU";
+  const UPDATE_URL  = "https://prod-05.spaincentral.logic.azure.com:443/workflows/ff17882f7bee4ac381f99bc797454134/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=r3lwZCuyOoikhcJestDNPq41jdK1quNxhbo6Wfg2s40";
+  const DELETE_URL  = "https://prod-03.spaincentral.logic.azure.com:443/workflows/064716e1a4744a5eba74506baa2b81d8/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=SDbC5bg89eFU2Qu87lUdgThGQZsfnjMGnyoY5FE3L_Q";
+
+  const OWNER_ID = "demo-user-001";
+  let editingId = null;
+  let editingOwnerId = null;
+
+  function setStatus(msg, isError=false) {
+    const el = document.getElementById("status");
+    el.textContent = msg;
+    el.className = isError ? "status error" : "status";
+  }
+
+  function getEmoji(type) {
+    if (!type) return "📄";
+    if (type.startsWith("image")) return "🖼️";
+    if (type.startsWith("video")) return "🎬";
+    if (type.startsWith("audio")) return "🎵";
+    return "📄";
+  }
+
+  async function handleUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    setStatus("⏳ Uploading " + file.name + "...");
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const base64 = e.target.result.split(",")[1];
+      try {
+        const res = await fetch(UPLOAD_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fileName: file.name,
+            fileContent: base64,
+            mediaType: file.type,
+            ownerId: OWNER_ID,
+            tags: []
+          })
+        });
+        if (res.ok || res.status === 201) {
+          setStatus("✅ Uploaded: " + file.name);
+          loadGallery();
+        } else {
+          setStatus("❌ Upload failed: " + res.status, true);
+        }
+      } catch(err) {
+        setStatus("❌ Error: " + err.message, true);
+      }
+    };
+    reader.readAsDataURL(file);
+    event.target.value = "";
+  }
+
+  async function loadGallery() {
+    setStatus("⏳ Loading gallery...");
+    try {
+      const res = await fetch(GET_ALL_URL);
+      const data = await res.json();
+      const items = data.Documents || data.value || data || [];
+      const gallery = document.getElementById("gallery");
+      if (!items.length) {
+        gallery.innerHTML = '<p class="empty">No media yet. Upload your first file above!</p>';
+        setStatus("");
+        return;
+      }
+      gallery.innerHTML = items.map(item => `
+        <div class="card">
+          ${item.mediaType && item.mediaType.startsWith("image") && item.blobUri
+            ? `<img class="card-preview" src="${item.blobUri}" alt="${item.fileName}"
+                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+               <div class="card-placeholder" style="display:none">${getEmoji(item.mediaType)}</div>`
+            : `<div class="card-placeholder">${getEmoji(item.mediaType)}</div>`
+          }
+          <div class="card-body">
+            <h3>${item.fileName || "Unknown"}</h3>
+            <div class="tags">🏷 ${Array.isArray(item.tags) && item.tags.length ? item.tags.join(", ") : "No tags"}</div>
+            <div class="card-actions">
+              <button class="btn btn-sm"
+                onclick="openEdit('${item.id}','${item.ownerId || OWNER_ID}','${item.fileName}','${Array.isArray(item.tags) ? item.tags.join(",") : ""}')">
+                ✏️ Edit
+              </button>
+              <button class="btn btn-red btn-sm"
+                onclick="deleteItem('${item.id}','${item.ownerId || OWNER_ID}')">
+                🗑 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+      setStatus("✅ Loaded " + items.length + " item(s)");
+    } catch(err) {
+      setStatus("❌ Gallery error: " + err.message, true);
+      document.getElementById("gallery").innerHTML = '<p class="empty">Could not load gallery.</p>';
+    }
+  }
+
+  function openEdit(id, ownerId, fileName, tags) {
+    editingId = id;
+    editingOwnerId = ownerId;
+    document.getElementById("editFileName").value = fileName;
+    document.getElementById("editTags").value = tags;
+    document.getElementById("editModal").classList.add("active");
+  }
+
+  function closeModal() {
+    document.getElementById("editModal").classList.remove("active");
+    editingId = null;
+    editingOwnerId = null;
+  }
+
+  async function saveEdit() {
+    if (!editingId) return;
+    const fileName = document.getElementById("editFileName").value;
+    const tags = document.getElementById("editTags").value
+      .split(",").map(t => t.trim()).filter(Boolean);
+    setStatus("⏳ Updating...");
+    try {
+      const res = await fetch(UPDATE_URL, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editingId, ownerId: editingOwnerId, fileName, tags })
+      });
+      if (res.ok || res.status === 200) {
+        setStatus("✅ Updated successfully");
+        closeModal();
+        loadGallery();
+      } else {
+        setStatus("❌ Update failed: " + res.status, true);
+      }
+    } catch(err) {
+      setStatus("❌ Error: " + err.message, true);
+    }
+  }
+
+  async function deleteItem(id, ownerId) {
+    if (!confirm("Delete this asset? This cannot be undone.")) return;
+    setStatus("⏳ Deleting...");
+    try {
+      const res = await fetch(DELETE_URL, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, ownerId })
+      });
+      if (res.ok || res.status === 204 || res.status === 200) {
+        setStatus("✅ Deleted successfully");
+        loadGallery();
+      } else {
+        setStatus("❌ Delete failed: " + res.status, true);
+      }
+    } catch(err) {
+      setStatus("❌ Error: " + err.message, true);
+    }
+  }
+
+  loadGallery();
+</script>
+</body>
+</html>
