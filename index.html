@@ -34,7 +34,7 @@
     .status.error { color:#cc3333; }
     .gallery {
       display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(200px,1fr));
+      grid-template-columns:repeat(auto-fill, minmax(220px,1fr));
       gap:16px; padding:0 24px 24px;
     }
     .gallery-title {
@@ -46,11 +46,13 @@
       border-radius:8px; overflow:hidden;
     }
     .card-preview {
-      width:100%; height:140px; object-fit:cover;
-      display:block; background:#141414;
+      width:100%; height:160px; object-fit:cover;
+      display:block; background:#141414; cursor:pointer;
+      transition: opacity 0.2s;
     }
+    .card-preview:hover { opacity:0.85; }
     .card-placeholder {
-      width:100%; height:140px; background:#141414;
+      width:100%; height:160px; background:#141414;
       display:flex; align-items:center;
       justify-content:center; font-size:2.5rem;
     }
@@ -77,18 +79,32 @@
     }
     .modal-actions { display:flex; gap:8px; margin-top:4px; }
     .empty { color:#888; padding:24px; font-size:13px; }
+    .viewer-overlay {
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,0.96);
+      justify-content:center; align-items:center;
+      z-index:2000; flex-direction:column; cursor:pointer;
+    }
+    .viewer-overlay.active { display:flex; }
+    .viewer-overlay img {
+      max-width:90vw; max-height:82vh;
+      border:2px solid #c8f135; border-radius:8px;
+    }
+    .viewer-overlay p {
+      color:#c8f135; font-size:12px; margin-top:12px;
+    }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>⚡ MediaCloud Pro</h1>
-  <span>👤 demo-user-001</span>
+  <h1>&#9889; MediaCloud Pro</h1>
+  <span>&#128100; demo-user-001</span>
 </header>
 
 <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
-  <p class="title">⬆ Click or Drag &amp; Drop to Upload</p>
-  <p class="sub">Images, Videos, Audio — stored in Azure Blob Storage</p>
+  <p class="title">&#8679; Click or Drag &amp; Drop to Upload</p>
+  <p class="sub">Images, Videos, Audio &#8212; stored in Azure Blob Storage</p>
   <input type="file" id="fileInput" style="display:none"
          accept="image/*,video/*,audio/*" onchange="handleUpload(event)"/>
 </div>
@@ -99,16 +115,23 @@
   <p class="empty">Loading your media...</p>
 </div>
 
+<!-- Edit Modal -->
 <div class="modal-overlay" id="editModal">
   <div class="modal">
-    <h2>✏️ Edit Asset</h2>
+    <h2>&#9999;&#65039; Edit Asset</h2>
     <input type="text" id="editFileName" placeholder="File name"/>
-    <input type="text" id="editTags" placeholder="Tags (comma separated)"/>
+    <input type="text" id="editTags" placeholder="Tags (comma separated e.g. nature, travel)"/>
     <div class="modal-actions">
-      <button class="btn" onclick="saveEdit()">Save</button>
+      <button class="btn" onclick="saveEdit()">Save Changes</button>
       <button class="btn btn-red" onclick="closeModal()">Cancel</button>
     </div>
   </div>
+</div>
+
+<!-- Image Viewer -->
+<div class="viewer-overlay" id="viewerOverlay" onclick="closeViewer()">
+  <img id="viewerImg" src="" alt=""/>
+  <p>&#10006; Click anywhere to close</p>
 </div>
 
 <script>
@@ -135,10 +158,21 @@
     return "📄";
   }
 
+  function viewImage(blobUri, fileName) {
+    document.getElementById("viewerImg").src = blobUri;
+    document.getElementById("viewerImg").alt = fileName;
+    document.getElementById("viewerOverlay").classList.add("active");
+  }
+
+  function closeViewer() {
+    document.getElementById("viewerOverlay").classList.remove("active");
+    document.getElementById("viewerImg").src = "";
+  }
+
   async function handleUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
-    setStatus("⏳ Uploading " + file.name + "...");
+    setStatus("Uploading " + file.name + "...");
     const reader = new FileReader();
     reader.onload = async (e) => {
       const base64 = e.target.result.split(",")[1];
@@ -155,13 +189,13 @@
           })
         });
         if (res.ok || res.status === 201) {
-          setStatus("✅ Uploaded: " + file.name);
+          setStatus("Uploaded: " + file.name);
           loadGallery();
         } else {
-          setStatus("❌ Upload failed: " + res.status, true);
+          setStatus("Upload failed: " + res.status, true);
         }
       } catch(err) {
-        setStatus("❌ Error: " + err.message, true);
+        setStatus("Error: " + err.message, true);
       }
     };
     reader.readAsDataURL(file);
@@ -169,7 +203,7 @@
   }
 
   async function loadGallery() {
-    setStatus("⏳ Loading gallery...");
+    setStatus("Loading gallery...");
     try {
       const res = await fetch(GET_ALL_URL);
       const data = await res.json();
@@ -184,29 +218,30 @@
         <div class="card">
           ${item.mediaType && item.mediaType.startsWith("image") && item.blobUri
             ? `<img class="card-preview" src="${item.blobUri}" alt="${item.fileName}"
+                    onclick="viewImage('${item.blobUri}','${item.fileName}')"
                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
                <div class="card-placeholder" style="display:none">${getEmoji(item.mediaType)}</div>`
             : `<div class="card-placeholder">${getEmoji(item.mediaType)}</div>`
           }
           <div class="card-body">
             <h3>${item.fileName || "Unknown"}</h3>
-            <div class="tags">🏷 ${Array.isArray(item.tags) && item.tags.length ? item.tags.join(", ") : "No tags"}</div>
+            <div class="tags">Tags: ${Array.isArray(item.tags) && item.tags.length ? item.tags.join(", ") : "No tags"}</div>
             <div class="card-actions">
               <button class="btn btn-sm"
                 onclick="openEdit('${item.id}','${item.ownerId || OWNER_ID}','${item.fileName}','${Array.isArray(item.tags) ? item.tags.join(",") : ""}')">
-                ✏️ Edit
+                Edit
               </button>
               <button class="btn btn-red btn-sm"
                 onclick="deleteItem('${item.id}','${item.ownerId || OWNER_ID}')">
-                🗑 Delete
+                Delete
               </button>
             </div>
           </div>
         </div>
       `).join("");
-      setStatus("✅ Loaded " + items.length + " item(s)");
+      setStatus("Loaded " + items.length + " item(s)");
     } catch(err) {
-      setStatus("❌ Gallery error: " + err.message, true);
+      setStatus("Gallery error: " + err.message, true);
       document.getElementById("gallery").innerHTML = '<p class="empty">Could not load gallery.</p>';
     }
   }
@@ -230,7 +265,7 @@
     const fileName = document.getElementById("editFileName").value;
     const tags = document.getElementById("editTags").value
       .split(",").map(t => t.trim()).filter(Boolean);
-    setStatus("⏳ Updating...");
+    setStatus("Updating...");
     try {
       const res = await fetch(UPDATE_URL, {
         method: "PUT",
@@ -238,20 +273,20 @@
         body: JSON.stringify({ id: editingId, ownerId: editingOwnerId, fileName, tags })
       });
       if (res.ok || res.status === 200) {
-        setStatus("✅ Updated successfully");
+        setStatus("Updated successfully");
         closeModal();
         loadGallery();
       } else {
-        setStatus("❌ Update failed: " + res.status, true);
+        setStatus("Update failed: " + res.status, true);
       }
     } catch(err) {
-      setStatus("❌ Error: " + err.message, true);
+      setStatus("Error: " + err.message, true);
     }
   }
 
   async function deleteItem(id, ownerId) {
     if (!confirm("Delete this asset? This cannot be undone.")) return;
-    setStatus("⏳ Deleting...");
+    setStatus("Deleting...");
     try {
       const res = await fetch(DELETE_URL, {
         method: "DELETE",
@@ -259,13 +294,13 @@
         body: JSON.stringify({ id, ownerId })
       });
       if (res.ok || res.status === 204 || res.status === 200) {
-        setStatus("✅ Deleted successfully");
+        setStatus("Deleted successfully");
         loadGallery();
       } else {
-        setStatus("❌ Delete failed: " + res.status, true);
+        setStatus("Delete failed: " + res.status, true);
       }
     } catch(err) {
-      setStatus("❌ Error: " + err.message, true);
+      setStatus("Error: " + err.message, true);
     }
   }
 
