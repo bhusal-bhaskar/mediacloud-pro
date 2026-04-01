@@ -90,9 +90,7 @@
       max-width:90vw; max-height:82vh;
       border:2px solid #c8f135; border-radius:8px;
     }
-    .viewer-overlay p {
-      color:#c8f135; font-size:12px; margin-top:12px;
-    }
+    .viewer-overlay p { color:#c8f135; font-size:12px; margin-top:12px; }
   </style>
 </head>
 <body>
@@ -115,12 +113,11 @@
   <p class="empty">Loading your media...</p>
 </div>
 
-<!-- Edit Modal -->
 <div class="modal-overlay" id="editModal">
   <div class="modal">
     <h2>&#9999;&#65039; Edit Asset</h2>
     <input type="text" id="editFileName" placeholder="File name"/>
-    <input type="text" id="editTags" placeholder="Tags (comma separated e.g. nature, travel)"/>
+    <input type="text" id="editTags" placeholder="Tags (comma separated)"/>
     <div class="modal-actions">
       <button class="btn" onclick="saveEdit()">Save Changes</button>
       <button class="btn btn-red" onclick="closeModal()">Cancel</button>
@@ -128,7 +125,6 @@
   </div>
 </div>
 
-<!-- Image Viewer -->
 <div class="viewer-overlay" id="viewerOverlay" onclick="closeViewer()">
   <img id="viewerImg" src="" alt=""/>
   <p>&#10006; Click anywhere to close</p>
@@ -289,7 +285,7 @@
     setStatus("Deleting...");
     try {
       const res = await fetch(DELETE_URL, {
-        method: "DELETE",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, ownerId })
       });
