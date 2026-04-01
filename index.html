@@ -139,6 +139,8 @@
   const OWNER_ID = "demo-user-001";
   let editingId = null;
   let editingOwnerId = null;
+  let editingBlobUri = null;
+  let editingMediaType = null;
 
   function setStatus(msg, isError=false) {
     const el = document.getElementById("status");
@@ -155,7 +157,8 @@
   }
 
   function viewImage(blobUri, fileName) {
-    document.getElementById("viewerImg").src = blobUri;
+    const encodedUri = blobUri.split('/').map((part, i) => i > 2 ? encodeURIComponent(part) : part).join('/');
+    document.getElementById("viewerImg").src = encodedUri;
     document.getElementById("viewerImg").alt = fileName;
     document.getElementById("viewerOverlay").classList.add("active");
   }
@@ -210,11 +213,19 @@
         setStatus("");
         return;
       }
-      gallery.innerHTML = items.map(item => `
+      gallery.innerHTML = items.map(item => {
+        const safeId = (item.id||"").replace(/'/g, "\\'");
+        const safeOwner = (item.ownerId||OWNER_ID).replace(/'/g, "\\'");
+        const safeName = (item.fileName||"Unknown").replace(/'/g, "\\'");
+        const safeTags = (Array.isArray(item.tags) ? item.tags.join(",") : "").replace(/'/g, "\\'");
+        const safeBlob = (item.blobUri||"").replace(/'/g, "\\'");
+        const safeType = (item.mediaType||"").replace(/'/g, "\\'");
+        const encodedUri = item.blobUri ? item.blobUri.split('/').map((part, i) => i > 2 ? encodeURIComponent(part) : part).join('/') : "";
+        return `
         <div class="card">
           ${item.mediaType && item.mediaType.startsWith("image") && item.blobUri
-            ? `<img class="card-preview" src="${item.blobUri}" alt="${item.fileName}"
-                    onclick="viewImage('${item.blobUri}','${item.fileName}')"
+            ? `<img class="card-preview" src="${encodedUri}" alt="${item.fileName}"
+                    onclick="viewImage('${safeBlob}','${safeName}')"
                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
                <div class="card-placeholder" style="display:none">${getEmoji(item.mediaType)}</div>`
             : `<div class="card-placeholder">${getEmoji(item.mediaType)}</div>`
@@ -224,17 +235,17 @@
             <div class="tags">Tags: ${Array.isArray(item.tags) && item.tags.length ? item.tags.join(", ") : "No tags"}</div>
             <div class="card-actions">
               <button class="btn btn-sm"
-                onclick="openEdit('${item.id}','${item.ownerId || OWNER_ID}','${item.fileName}','${Array.isArray(item.tags) ? item.tags.join(",") : ""}')">
+                onclick="openEdit('${safeId}','${safeOwner}','${safeName}','${safeTags}','${safeBlob}','${safeType}')">
                 Edit
               </button>
               <button class="btn btn-red btn-sm"
-                onclick="deleteItem('${item.id}','${item.ownerId || OWNER_ID}')">
+                onclick="deleteItem('${safeId}','${safeOwner}')">
                 Delete
               </button>
             </div>
           </div>
-        </div>
-      `).join("");
+        </div>`;
+      }).join("");
       setStatus("Loaded " + items.length + " item(s)");
     } catch(err) {
       setStatus("Gallery error: " + err.message, true);
@@ -242,9 +253,11 @@
     }
   }
 
-  function openEdit(id, ownerId, fileName, tags) {
+  function openEdit(id, ownerId, fileName, tags, blobUri, mediaType) {
     editingId = id;
     editingOwnerId = ownerId;
+    editingBlobUri = blobUri;
+    editingMediaType = mediaType;
     document.getElementById("editFileName").value = fileName;
     document.getElementById("editTags").value = tags;
     document.getElementById("editModal").classList.add("active");
@@ -254,6 +267,8 @@
     document.getElementById("editModal").classList.remove("active");
     editingId = null;
     editingOwnerId = null;
+    editingBlobUri = null;
+    editingMediaType = null;
   }
 
   async function saveEdit() {
@@ -266,7 +281,14 @@
       const res = await fetch(UPDATE_URL, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: editingId, ownerId: editingOwnerId, fileName, tags })
+        body: JSON.stringify({
+          id: editingId,
+          ownerId: editingOwnerId,
+          fileName: fileName,
+          blobUri: editingBlobUri,
+          mediaType: editingMediaType,
+          tags: tags
+        })
       });
       if (res.ok || res.status === 200) {
         setStatus("Updated successfully");
