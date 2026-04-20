@@ -4,226 +4,116 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MediaCloud Pro</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23c8f135'/><text y='72' x='50' text-anchor='middle' font-size='55' font-family='Arial Black' font-weight='900' fill='%23000'>MC</text></svg>"/>
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Segoe UI',Arial,sans-serif; background:#f5f6fa; color:#1a1a2e; }
-
-    /* HEADER */
-    header {
-      background:#fff; padding:0 32px;
-      display:flex; align-items:center; justify-content:space-between;
-      border-bottom:1px solid #e0e0e0; height:64px;
-      position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.06);
-    }
-    .logo { display:flex; align-items:center; gap:10px; }
-    .logo-icon {
-      width:38px; height:38px; background:linear-gradient(135deg,#c8f135,#7ab017);
-      border-radius:8px; display:flex; align-items:center; justify-content:center;
-      font-size:1.2rem; font-weight:900; color:#000;
-    }
-    .logo-text { font-size:1.3rem; font-weight:700; color:#1a1a2e; }
-    nav { display:flex; gap:8px; }
-    nav a {
-      padding:8px 18px; border-radius:8px; font-size:14px; font-weight:500;
-      color:#666; cursor:pointer; text-decoration:none; border:none; background:none;
-      transition:all 0.2s;
-    }
-    nav a.active, nav a:hover { background:#f0f9e0; color:#7ab017; }
-    .header-right { display:flex; align-items:center; gap:12px; }
-    .user-badge {
-      display:flex; align-items:center; gap:8px;
-      background:#f5f6fa; padding:6px 14px; border-radius:20px;
-      font-size:13px; color:#555;
-    }
-    .avatar {
-      width:32px; height:32px; background:linear-gradient(135deg,#c8f135,#7ab017);
-      border-radius:50%; display:flex; align-items:center; justify-content:center;
-      font-size:14px; font-weight:700; color:#000;
-    }
-    .btn-upload {
-      background:linear-gradient(135deg,#c8f135,#9ec016);
-      color:#000; border:none; padding:10px 22px; border-radius:10px;
-      cursor:pointer; font-weight:700; font-size:14px; transition:all 0.2s;
-      box-shadow:0 2px 8px rgba(200,241,53,0.4);
-    }
-    .btn-upload:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(200,241,53,0.5); }
-
-    /* MAIN */
-    main { max-width:1200px; margin:0 auto; padding:32px 24px; }
-
-    /* FILTER TABS */
-    .filter-bar {
-      display:flex; align-items:center; justify-content:space-between;
-      margin-bottom:24px;
-    }
-    .filter-tabs { display:flex; gap:8px; }
-    .filter-tab {
-      padding:8px 20px; border-radius:20px; font-size:14px; font-weight:500;
-      cursor:pointer; border:none; background:#fff; color:#666;
-      transition:all 0.2s; box-shadow:0 1px 4px rgba(0,0,0,0.08);
-    }
-    .filter-tab.active {
-      background:linear-gradient(135deg,#c8f135,#9ec016);
-      color:#000; box-shadow:0 2px 8px rgba(200,241,53,0.4);
-    }
-    .item-count { font-size:13px; color:#999; }
-
-    /* STATUS */
-    .status {
-      padding:10px 16px; border-radius:8px; font-size:13px;
-      margin-bottom:16px; display:none;
-    }
-    .status.show { display:block; }
-    .status.success { background:#f0f9e0; color:#5a8a00; border:1px solid #c8f135; }
-    .status.error { background:#fff0f0; color:#cc3333; border:1px solid #ffcccc; }
-    .status.info { background:#f0f6ff; color:#2255aa; border:1px solid #cce0ff; }
-
-    /* GALLERY */
-    .gallery {
-      display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(260px,1fr));
-      gap:20px;
-    }
-    .card {
-      background:#fff; border-radius:14px; overflow:hidden;
-      box-shadow:0 2px 12px rgba(0,0,0,0.08); transition:all 0.2s;
-      position:relative;
-    }
-    .card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,0.12); }
-    .card-media {
-      width:100%; height:180px; position:relative; overflow:hidden;
-      background:#f0f0f0;
-    }
-    .card-media img {
-      width:100%; height:100%; object-fit:cover; cursor:pointer;
-      transition:transform 0.3s;
-    }
-    .card-media img:hover { transform:scale(1.05); }
-    .card-media .media-icon {
-      width:100%; height:100%; display:flex; flex-direction:column;
-      align-items:center; justify-content:center; gap:8px;
-      background:linear-gradient(135deg,#1a1a2e,#2d2d44);
-    }
-    .card-media .media-icon span { font-size:3rem; }
-    .card-media .media-icon p { font-size:12px; color:#aaa; }
-    .card-media .play-btn {
-      position:absolute; inset:0; display:flex;
-      align-items:center; justify-content:center;
-      background:rgba(0,0,0,0.3); cursor:pointer;
-    }
-    .play-btn-circle {
-      width:50px; height:50px; background:rgba(255,255,255,0.9);
-      border-radius:50%; display:flex; align-items:center; justify-content:center;
-      font-size:1.4rem;
-    }
-    .card-body { padding:14px; }
-    .card-title { font-size:15px; font-weight:600; color:#1a1a2e; margin-bottom:4px; word-break:break-word; }
-    .card-date { font-size:12px; color:#999; margin-bottom:10px; }
-    .card-tags { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:10px; }
-    .tag {
-      background:#f0f9e0; color:#5a8a00; font-size:11px;
-      padding:2px 8px; border-radius:10px; font-weight:500;
-    }
-    .card-actions { display:flex; gap:8px; }
-    .btn-edit {
-      flex:1; background:#f5f6fa; color:#333; border:none;
-      padding:8px; border-radius:8px; cursor:pointer; font-size:13px;
-      font-weight:500; transition:all 0.2s;
-    }
-    .btn-edit:hover { background:#e8e8e8; }
-    .btn-delete {
-      background:#fff0f0; color:#cc3333; border:none;
-      padding:8px 14px; border-radius:8px; cursor:pointer;
-      font-size:13px; font-weight:500; transition:all 0.2s;
-    }
-    .btn-delete:hover { background:#ffdddd; }
-
-    /* AUDIO PLAYER */
-    .audio-player {
-      background:linear-gradient(135deg,#1a1a2e,#2d2d44);
-      padding:12px 16px; display:flex; align-items:center; gap:12px;
-    }
-    .audio-play { width:36px; height:36px; background:#c8f135; border-radius:50%;
-      border:none; cursor:pointer; font-size:1rem; display:flex;
-      align-items:center; justify-content:center; flex-shrink:0;
-    }
-    .audio-info { flex:1; min-width:0; }
-    .audio-name { font-size:12px; color:#fff; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .audio-bar { height:3px; background:#444; border-radius:2px; margin-top:6px; }
-    .audio-fill { height:100%; width:0%; background:#c8f135; border-radius:2px; transition:width 0.1s; }
-    .audio-time { font-size:11px; color:#888; flex-shrink:0; }
-
-    /* EMPTY */
-    .empty-state {
-      grid-column:1/-1; text-align:center; padding:80px 24px;
-    }
-    .empty-state .icon { font-size:4rem; margin-bottom:16px; }
-    .empty-state h3 { font-size:1.2rem; color:#333; margin-bottom:8px; }
-    .empty-state p { font-size:14px; color:#999; }
-
-    /* UPLOAD MODAL */
-    .modal-overlay {
-      display:none; position:fixed; inset:0;
-      background:rgba(0,0,0,0.5); backdrop-filter:blur(4px);
-      justify-content:center; align-items:center; z-index:1000;
-    }
-    .modal-overlay.active { display:flex; }
-    .modal {
-      background:#fff; border-radius:16px; padding:28px;
-      width:460px; box-shadow:0 20px 60px rgba(0,0,0,0.2);
-    }
-    .modal h2 { font-size:1.1rem; font-weight:700; color:#1a1a2e; margin-bottom:20px; }
-    .modal label { font-size:13px; font-weight:600; color:#555; display:block; margin-bottom:6px; }
-    .modal input {
-      background:#f5f6fa; border:1px solid #e0e0e0; color:#1a1a2e;
-      padding:10px 14px; border-radius:10px; width:100%;
-      margin-bottom:14px; font-size:14px; outline:none;
-      transition:border 0.2s;
-    }
-    .modal input:focus { border-color:#c8f135; }
-    .modal-actions { display:flex; gap:10px; margin-top:6px; }
-    .btn-save {
-      flex:1; background:linear-gradient(135deg,#c8f135,#9ec016);
-      color:#000; border:none; padding:12px; border-radius:10px;
-      cursor:pointer; font-weight:700; font-size:14px;
-    }
-    .btn-cancel {
-      background:#f5f6fa; color:#666; border:none; padding:12px 20px;
-      border-radius:10px; cursor:pointer; font-weight:600; font-size:14px;
-    }
-
-    /* UPLOAD DROP ZONE */
-    .drop-zone {
-      border:2px dashed #c8f135; border-radius:12px; padding:40px;
-      text-align:center; background:#fafff0; cursor:pointer;
-      transition:all 0.2s; margin-bottom:20px;
-    }
-    .drop-zone:hover { background:#f0f9e0; }
-    .drop-zone .dz-icon { font-size:2.5rem; margin-bottom:10px; }
-    .drop-zone p { color:#7ab017; font-weight:600; font-size:15px; }
-    .drop-zone small { color:#999; font-size:13px; }
-
-    /* IMAGE VIEWER */
-    .viewer-overlay {
-      display:none; position:fixed; inset:0;
-      background:rgba(0,0,0,0.95); backdrop-filter:blur(8px);
-      justify-content:center; align-items:center;
-      z-index:2000; flex-direction:column; cursor:pointer;
-    }
-    .viewer-overlay.active { display:flex; }
-    .viewer-overlay img {
-      max-width:90vw; max-height:85vh;
-      border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,0.5);
-    }
-    .viewer-close {
-      position:absolute; top:20px; right:20px;
-      background:rgba(255,255,255,0.1); border:none; color:#fff;
-      width:40px; height:40px; border-radius:50%; font-size:1.2rem;
-      cursor:pointer; display:flex; align-items:center; justify-content:center;
-    }
-    .viewer-name {
-      color:#fff; font-size:14px; margin-top:16px; opacity:0.7;
-    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:#1a1a2e;}
+    header{background:#fff;padding:0 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e8e8e8;height:68px;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,0.07);}
+    .logo{display:flex;align-items:center;gap:12px;}
+    .logo-icon{width:42px;height:42px;background:linear-gradient(135deg,#c8f135,#7ab017);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#000;box-shadow:0 3px 10px rgba(200,241,53,0.45);}
+    .logo-text{font-size:1.25rem;font-weight:800;color:#1a1a2e;}.logo-text span{color:#7ab017;}
+    nav{display:flex;gap:4px;}
+    nav button{padding:8px 18px;border-radius:8px;font-size:14px;font-weight:500;color:#666;cursor:pointer;border:none;background:none;transition:all 0.2s;}
+    nav button:hover,nav button.active{background:#f0f9e0;color:#5a8a00;}
+    .header-right{display:flex;align-items:center;gap:14px;}
+    .user-badge{display:flex;align-items:center;gap:8px;background:#f5f6fa;padding:6px 14px 6px 8px;border-radius:24px;font-size:13px;color:#444;font-weight:500;}
+    .avatar{width:30px;height:30px;background:linear-gradient(135deg,#c8f135,#7ab017);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#000;}
+    .btn-upload-header{background:linear-gradient(135deg,#c8f135,#9ec016);color:#000;border:none;padding:10px 24px;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;transition:all 0.2s;box-shadow:0 3px 10px rgba(200,241,53,0.4);}
+    .btn-upload-header:hover{transform:translateY(-2px);}
+    .hero{background:linear-gradient(135deg,#1a1a2e,#2d2d44,#1a2e1a);padding:48px 40px;color:#fff;position:relative;overflow:hidden;}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(200,241,53,0.12),transparent 60%);}
+    .hero-content{max-width:1200px;margin:0 auto;position:relative;}
+    .hero h1{font-size:2rem;font-weight:800;margin-bottom:8px;}.hero h1 span{color:#c8f135;}
+    .hero p{color:#aaa;font-size:15px;margin-bottom:28px;max-width:500px;}
+    .hero-upload{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#c8f135,#9ec016);color:#000;padding:14px 32px;border-radius:12px;border:none;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 16px rgba(200,241,53,0.4);}
+    .hero-upload:hover{transform:translateY(-2px);}
+    .hero-stats{display:flex;gap:32px;margin-top:32px;}
+    .hero-stat{display:flex;flex-direction:column;}
+    .hero-stat .num{font-size:1.6rem;font-weight:800;color:#c8f135;}
+    .hero-stat .label{font-size:12px;color:#888;margin-top:2px;}
+    main{max-width:1200px;margin:0 auto;padding:32px 24px;}
+    .status{padding:12px 18px;border-radius:10px;font-size:13px;margin-bottom:20px;display:none;font-weight:500;align-items:center;gap:8px;}
+    .status.show{display:flex;}
+    .status.success{background:#f0f9e0;color:#4a7a00;border:1px solid #c8f135;}
+    .status.error{background:#fff0f0;color:#cc3333;border:1px solid #ffcccc;}
+    .status.info{background:#f0f6ff;color:#2255aa;border:1px solid #cce0ff;}
+    .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+    .filter-tabs{display:flex;gap:8px;flex-wrap:wrap;}
+    .filter-tab{padding:8px 22px;border-radius:24px;font-size:14px;font-weight:600;cursor:pointer;border:2px solid transparent;background:#fff;color:#666;transition:all 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+    .filter-tab:hover{border-color:#c8f135;color:#5a8a00;}
+    .filter-tab.active{background:linear-gradient(135deg,#c8f135,#9ec016);color:#000;border-color:transparent;box-shadow:0 3px 10px rgba(200,241,53,0.4);}
+    .item-count{font-size:13px;color:#999;font-weight:500;}
+    .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px;}
+    .card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 14px rgba(0,0,0,0.07);transition:all 0.25s;position:relative;}
+    .card:hover{transform:translateY(-4px);box-shadow:0 10px 28px rgba(0,0,0,0.12);}
+    .card-img-wrap{width:100%;height:200px;overflow:hidden;position:relative;background:#eee;cursor:pointer;}
+    .card-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s;display:block;}
+    .card-img-wrap:hover img{transform:scale(1.06);}
+    .img-overlay{position:absolute;inset:0;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;transition:background 0.3s;}
+    .card-img-wrap:hover .img-overlay{background:rgba(0,0,0,0.25);}
+    .img-overlay-icon{color:#fff;font-size:2rem;opacity:0;transition:opacity 0.3s;}
+    .card-img-wrap:hover .img-overlay-icon{opacity:1;}
+    .card-video-wrap{width:100%;height:200px;background:linear-gradient(135deg,#1a1a2e,#2d2d44);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;position:relative;cursor:pointer;}
+    .video-placeholder{width:100%;height:200px;background:linear-gradient(135deg,#1a1a2e,#2d2d44);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;}
+    .video-placeholder span{font-size:3rem;}.video-placeholder p{font-size:12px;color:#888;}
+    .play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);}
+    .play-circle{width:56px;height:56px;background:rgba(200,241,53,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#000;transition:transform 0.2s;}
+    .card-video-wrap:hover .play-circle{transform:scale(1.1);}
+    .card-audio{background:linear-gradient(135deg,#1a1a2e,#2d2d44);padding:20px 16px;}
+    .audio-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+    .audio-icon{width:48px;height:48px;background:rgba(200,241,53,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;}
+    .audio-meta{flex:1;min-width:0;}
+    .audio-title{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .audio-sub{font-size:11px;color:#888;margin-top:2px;}
+    .audio-controls{display:flex;align-items:center;gap:10px;}
+    .audio-btn{width:36px;height:36px;background:#c8f135;border-radius:50%;border:none;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform 0.2s;}
+    .audio-btn:hover{transform:scale(1.1);}
+    .audio-progress{flex:1;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;overflow:hidden;}
+    .audio-progress-fill{height:100%;width:0%;background:#c8f135;border-radius:2px;}
+    .card-body{padding:16px;}
+    .card-title{font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:4px;word-break:break-word;line-height:1.3;}
+    .card-date{font-size:12px;color:#aaa;margin-bottom:10px;}
+    .card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+    .tag{background:#f0f9e0;color:#5a8a00;font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600;}
+    .card-type-badge{position:absolute;top:12px;left:12px;background:rgba(0,0,0,0.6);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:0.5px;backdrop-filter:blur(4px);}
+    .card-actions{display:flex;gap:8px;}
+    .btn-edit-card{flex:1;background:#f5f6fa;color:#333;border:none;padding:9px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;transition:all 0.2s;}
+    .btn-edit-card:hover{background:#e8e8e8;}
+    .btn-delete-card{background:#fff0f0;color:#cc3333;border:none;padding:9px 14px;border-radius:9px;cursor:pointer;font-size:15px;transition:all 0.2s;}
+    .btn-delete-card:hover{background:#ffe0e0;}
+    .empty-state{grid-column:1/-1;text-align:center;padding:80px 24px;}
+    .empty-icon{font-size:4rem;margin-bottom:16px;}
+    .empty-state h3{font-size:1.3rem;color:#333;margin-bottom:8px;font-weight:700;}
+    .empty-state p{font-size:14px;color:#999;margin-bottom:24px;}
+    .btn-empty-upload{background:linear-gradient(135deg,#c8f135,#9ec016);color:#000;border:none;padding:12px 28px;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;}
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(6px);justify-content:center;align-items:center;z-index:1000;}
+    .modal-overlay.active{display:flex;}
+    .modal{background:#fff;border-radius:20px;padding:32px;width:480px;box-shadow:0 24px 64px rgba(0,0,0,0.2);}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+    .modal h2{font-size:1.1rem;font-weight:800;color:#1a1a2e;}
+    .modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;}
+    .modal label{font-size:12px;font-weight:700;color:#888;display:block;margin-bottom:6px;letter-spacing:0.5px;text-transform:uppercase;}
+    .modal input{background:#f5f6fa;border:2px solid transparent;color:#1a1a2e;padding:12px 14px;border-radius:10px;width:100%;margin-bottom:16px;font-size:14px;outline:none;transition:border 0.2s;}
+    .modal input:focus{border-color:#c8f135;background:#fff;}
+    .modal-actions{display:flex;gap:10px;margin-top:8px;}
+    .btn-save-modal{flex:1;background:linear-gradient(135deg,#c8f135,#9ec016);color:#000;border:none;padding:13px;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;}
+    .btn-cancel-modal{background:#f5f6fa;color:#666;border:none;padding:13px 20px;border-radius:10px;cursor:pointer;font-weight:600;font-size:14px;}
+    .viewer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.96);backdrop-filter:blur(10px);justify-content:center;align-items:center;z-index:3000;flex-direction:column;}
+    .viewer-overlay.active{display:flex;}
+    .viewer-overlay img{max-width:92vw;max-height:88vh;border-radius:12px;box-shadow:0 24px 64px rgba(0,0,0,0.6);display:block;}
+    .viewer-close{position:fixed;top:20px;right:24px;background:rgba(255,255,255,0.12);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .viewer-name{color:rgba(255,255,255,0.6);font-size:13px;margin-top:14px;}
+    .video-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.96);backdrop-filter:blur(10px);justify-content:center;align-items:center;z-index:3000;flex-direction:column;}
+    .video-modal-overlay.active{display:flex;}
+    .video-modal-overlay video{max-width:92vw;max-height:85vh;border-radius:12px;}
+    .video-modal-close{position:fixed;top:20px;right:24px;background:rgba(255,255,255,0.12);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .video-name{color:rgba(255,255,255,0.6);font-size:13px;margin-top:14px;}
+    .upload-progress{position:fixed;bottom:24px;right:24px;background:#1a1a2e;color:#fff;padding:16px 20px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.3);display:none;z-index:500;min-width:240px;}
+    .upload-progress.show{display:block;}
+    .up-label{font-size:13px;font-weight:600;margin-bottom:8px;}
+    .up-bar{height:4px;background:#333;border-radius:2px;overflow:hidden;}
+    .up-fill{height:100%;background:#c8f135;width:0%;transition:width 0.3s;border-radius:2px;}
+    @media(max-width:600px){header{padding:0 16px;}.hero{padding:32px 16px;}main{padding:20px 12px;}.gallery{grid-template-columns:1fr;}.logo-text{display:none;}}
   </style>
 </head>
 <body>
@@ -231,68 +121,85 @@
 <header>
   <div class="logo">
     <div class="logo-icon">MC</div>
-    <span class="logo-text">MediaCloud Pro</span>
+    <span class="logo-text">MediaCloud <span>Pro</span></span>
   </div>
   <nav>
-    <a class="active">Home</a>
-    <a onclick="document.getElementById('fileInput').click()">Upload</a>
+    <button class="active">Home</button>
+    <button onclick="document.getElementById('fileInput').click()">Upload</button>
   </nav>
   <div class="header-right">
     <div class="user-badge">
       <div class="avatar">B</div>
-      <span>Bhaskar_Bhusal</span>
+      <span>Bhaskar Bhusal</span>
     </div>
-    <button class="btn-upload" onclick="document.getElementById('fileInput').click()">
-      &#8679; Upload
-    </button>
+    <button class="btn-upload-header" onclick="document.getElementById('fileInput').click()">&#8679; Upload</button>
   </div>
 </header>
 
-<input type="file" id="fileInput" style="display:none"
-       accept="image/*,video/*,audio/*" onchange="handleUpload(event)"/>
+<input type="file" id="fileInput" style="display:none" accept="image/*,video/*,audio/*" onchange="handleUpload(event)"/>
 
-<main>
-  <div class="status" id="status"></div>
-
-  <div class="filter-bar">
-    <div class="filter-tabs">
-      <button class="filter-tab active" onclick="filterGallery('all', this)">All</button>
-      <button class="filter-tab" onclick="filterGallery('image', this)">Images</button>
-      <button class="filter-tab" onclick="filterGallery('video', this)">Videos</button>
-      <button class="filter-tab" onclick="filterGallery('audio', this)">Audio</button>
-    </div>
-    <span class="item-count" id="itemCount"></span>
-  </div>
-
-  <div class="gallery" id="gallery">
-    <div class="empty-state">
-      <div class="icon">&#128247;</div>
-      <h3>Loading your media...</h3>
-      <p>Please wait</p>
-    </div>
-  </div>
-</main>
-
-<!-- Edit Modal -->
-<div class="modal-overlay" id="editModal">
-  <div class="modal">
-    <h2>&#9999;&#65039; Edit Asset</h2>
-    <label>File Name</label>
-    <input type="text" id="editFileName" placeholder="File name"/>
-    <label>Tags <span style="font-weight:400;color:#999">(comma separated)</span></label>
-    <input type="text" id="editTags" placeholder="e.g. nature, travel, sunset"/>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" onclick="saveEdit()">Save Changes</button>
+<div class="hero">
+  <div class="hero-content">
+    <h1>Your <span>Cloud Media</span> Gallery</h1>
+    <p>Upload, manage and share images, videos and audio — powered by Microsoft Azure Blob Storage and Cosmos DB.</p>
+    <button class="hero-upload" onclick="document.getElementById('fileInput').click()">&#8679; Upload Media</button>
+    <div class="hero-stats">
+      <div class="hero-stat"><span class="num" id="statTotal">0</span><span class="label">Total Files</span></div>
+      <div class="hero-stat"><span class="num" id="statImages">0</span><span class="label">Images</span></div>
+      <div class="hero-stat"><span class="num" id="statVideos">0</span><span class="label">Videos</span></div>
+      <div class="hero-stat"><span class="num" id="statAudio">0</span><span class="label">Audio</span></div>
     </div>
   </div>
 </div>
 
-<!-- Image Viewer -->
-<div class="viewer-overlay" id="viewerOverlay" onclick="closeViewer()">
-  <button class="viewer-close" onclick="closeViewer()">&#10005;</button>
+<main>
+  <div class="status" id="status"></div>
+  <div class="toolbar">
+    <div class="filter-tabs">
+      <button class="filter-tab active" onclick="filterGallery('all',this)">All</button>
+      <button class="filter-tab" onclick="filterGallery('image',this)">🖼 Images</button>
+      <button class="filter-tab" onclick="filterGallery('video',this)">🎬 Videos</button>
+      <button class="filter-tab" onclick="filterGallery('audio',this)">🎵 Audio</button>
+    </div>
+    <span class="item-count" id="itemCount"></span>
+  </div>
+  <div class="gallery" id="gallery">
+    <div class="empty-state"><div class="empty-icon">&#9729;</div><h3>Loading your media...</h3><p>Connecting to Azure...</p></div>
+  </div>
+</main>
+
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>✏️ Edit Asset</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <label>File Name</label>
+    <input type="text" id="editFileName" placeholder="Enter file name"/>
+    <label>Tags <span style="font-weight:400;color:#bbb;text-transform:none">(comma separated)</span></label>
+    <input type="text" id="editTags" placeholder="e.g. nature, travel, sunset"/>
+    <div class="modal-actions">
+      <button class="btn-cancel-modal" onclick="closeModal()">Cancel</button>
+      <button class="btn-save-modal" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<div class="viewer-overlay" id="viewerOverlay">
+  <button class="viewer-close" onclick="closeViewer()">✕</button>
   <img id="viewerImg" src="" alt=""/>
   <p class="viewer-name" id="viewerName"></p>
+</div>
+
+<div class="video-modal-overlay" id="videoModal">
+  <button class="video-modal-close" onclick="closeVideo()">✕</button>
+  <video id="videoPlayer" controls></video>
+  <p class="video-name" id="videoName"></p>
+</div>
+
+<div class="upload-progress" id="uploadProgress">
+  <div class="up-label" id="upLabel">Uploading...</div>
+  <div class="up-bar"><div class="up-fill" id="upFill"></div></div>
 </div>
 
 <script>
@@ -301,224 +208,166 @@
   const UPDATE_URL  = "https://prod-05.spaincentral.logic.azure.com:443/workflows/ff17882f7bee4ac381f99bc797454134/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=r3lwZCuyOoikhcJestDNPq41jdK1quNxhbo6Wfg2s40";
   const DELETE_URL  = "https://prod-03.spaincentral.logic.azure.com:443/workflows/064716e1a4744a5eba74506baa2b81d8/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=SDbC5bg89eFU2Qu87lUdgThGQZsfnjMGnyoY5FE3L_Q";
 
-  const OWNER_ID = "demo-user-001";
-  let allItems = [];
-  let editingId = null, editingOwnerId = null, editingBlobUri = null, editingMediaType = null;
-  let currentFilter = "all";
+  const OWNER_ID="demo-user-001";
+  let allItems=[], editingId=null, editingOwnerId=null, editingBlobUri=null, editingMediaType=null, currentFilter="all";
 
-  function setStatus(msg, type="info") {
-    const el = document.getElementById("status");
-    el.textContent = msg;
-    el.className = "status show " + type;
-    if (type === "success") setTimeout(() => el.classList.remove("show"), 3000);
+  function ss(s){return(s||"").replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/"/g,"&quot;");}
+
+  function encodeUri(uri){
+    if(!uri)return"";
+    try{const u=new URL(uri);const p=u.pathname.split('/');u.pathname=p.map(x=>encodeURIComponent(decodeURIComponent(x))).join('/');return u.toString();}
+    catch(e){return uri.split('/').map((p,i)=>i>2?encodeURIComponent(p):p).join('/');}
   }
 
-  function encodeUri(uri) {
-    if (!uri) return "";
-    return uri.split('/').map((part, i) => i > 2 ? encodeURIComponent(part) : part).join('/');
+  function formatDate(ts){if(!ts)return"";return new Date(ts*1000).toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});}
+
+  function setStatus(msg,type="info"){
+    const el=document.getElementById("status");
+    el.textContent=msg;el.className="status show "+type;
+    if(type==="success")setTimeout(()=>el.classList.remove("show"),3000);
   }
 
-  function formatDate(ts) {
-    if (!ts) return "";
-    const d = new Date(ts * 1000);
-    return d.toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric" });
+  function updateStats(){
+    document.getElementById("statTotal").textContent=allItems.length;
+    document.getElementById("statImages").textContent=allItems.filter(i=>i.mediaType&&i.mediaType.startsWith("image")).length;
+    document.getElementById("statVideos").textContent=allItems.filter(i=>i.mediaType&&i.mediaType.startsWith("video")).length;
+    document.getElementById("statAudio").textContent=allItems.filter(i=>i.mediaType&&i.mediaType.startsWith("audio")).length;
   }
 
-  function viewImage(blobUri, fileName) {
-    document.getElementById("viewerImg").src = encodeUri(blobUri);
-    document.getElementById("viewerName").textContent = fileName;
+  function viewImage(blobUri,fileName){
+    document.getElementById("viewerImg").src=encodeUri(blobUri);
+    document.getElementById("viewerName").textContent=fileName;
     document.getElementById("viewerOverlay").classList.add("active");
   }
+  function closeViewer(){document.getElementById("viewerOverlay").classList.remove("active");document.getElementById("viewerImg").src="";}
 
-  function closeViewer() {
-    document.getElementById("viewerOverlay").classList.remove("active");
+  function playVideo(blobUri,fileName){
+    const v=document.getElementById("videoPlayer");
+    v.src=encodeUri(blobUri);
+    document.getElementById("videoName").textContent=fileName;
+    document.getElementById("videoModal").classList.add("active");
+    v.play().catch(()=>{});
+  }
+  function closeVideo(){const v=document.getElementById("videoPlayer");v.pause();v.src="";document.getElementById("videoModal").classList.remove("active");}
+
+  let currentAudio=null;
+  function toggleAudio(btn,blobUri){
+    if(currentAudio&&!currentAudio.paused){currentAudio.pause();currentAudio=null;btn.textContent="▶";return;}
+    if(currentAudio)currentAudio.pause();
+    currentAudio=new Audio(encodeUri(blobUri));
+    currentAudio.play().catch(e=>alert("Cannot play: "+e.message));
+    btn.textContent="⏸";
+    currentAudio.onended=()=>{btn.textContent="▶";currentAudio=null;};
   }
 
-  function filterGallery(type, btn) {
-    currentFilter = type;
-    document.querySelectorAll(".filter-tab").forEach(t => t.classList.remove("active"));
+  function filterGallery(type,btn){
+    currentFilter=type;
+    document.querySelectorAll(".filter-tab").forEach(t=>t.classList.remove("active"));
     btn.classList.add("active");
     renderGallery();
   }
 
-  function renderGallery() {
-    const items = currentFilter === "all"
-      ? allItems
-      : allItems.filter(i => i.mediaType && i.mediaType.startsWith(currentFilter));
-
-    document.getElementById("itemCount").textContent = items.length + " item" + (items.length !== 1 ? "s" : "");
-    const gallery = document.getElementById("gallery");
-
-    if (!items.length) {
-      gallery.innerHTML = `<div class="empty-state">
-        <div class="icon">&#128247;</div>
-        <h3>No media here yet</h3>
-        <p>Upload your first file using the Upload button above</p>
-      </div>`;
+  function renderGallery(){
+    const items=currentFilter==="all"?allItems:allItems.filter(i=>i.mediaType&&i.mediaType.startsWith(currentFilter));
+    document.getElementById("itemCount").textContent=items.length+" item"+(items.length!==1?"s":"");
+    const g=document.getElementById("gallery");
+    if(!items.length){
+      g.innerHTML=`<div class="empty-state"><div class="empty-icon">&#9729;</div><h3>No media yet</h3><p>Upload your first file using the Upload button above</p><button class="btn-empty-upload" onclick="document.getElementById('fileInput').click()">&#8679; Upload Now</button></div>`;
       return;
     }
-
-    gallery.innerHTML = items.map(item => {
-      const safeId = (item.id||"").replace(/'/g,"\\'");
-      const safeOwner = (item.ownerId||OWNER_ID).replace(/'/g,"\\'");
-      const safeName = (item.fileName||"Unknown").replace(/'/g,"\\'").replace(/"/g,"&quot;");
-      const safeTags = (Array.isArray(item.tags) ? item.tags.join(",") : "").replace(/'/g,"\\'");
-      const safeBlob = (item.blobUri||"").replace(/'/g,"\\'");
-      const safeType = (item.mediaType||"").replace(/'/g,"\\'");
-      const encodedUri = encodeUri(item.blobUri);
-      const tags = Array.isArray(item.tags) && item.tags.length ? item.tags : [];
-      const isImage = item.mediaType && item.mediaType.startsWith("image");
-      const isVideo = item.mediaType && item.mediaType.startsWith("video");
-      const isAudio = item.mediaType && item.mediaType.startsWith("audio");
-
-      let mediaHtml = "";
-      if (isImage && item.blobUri) {
-        mediaHtml = `<div class="card-media">
-          <img src="${encodedUri}" alt="${safeName}"
-               onclick="viewImage('${safeBlob}','${safeName}')"
-               onerror="this.parentElement.innerHTML='<div class=\\"media-icon\\"><span>🖼️</span><p>Image</p></div>'"/>
-        </div>`;
-      } else if (isVideo) {
-        mediaHtml = `<div class="card-media">
-          <div class="media-icon"><span>🎬</span><p>Video File</p></div>
-          <div class="play-btn"><div class="play-btn-circle">▶</div></div>
-        </div>`;
-      } else if (isAudio) {
-        mediaHtml = `<div class="audio-player">
-          <button class="audio-play">▶</button>
-          <div class="audio-info">
-            <div class="audio-name">${item.fileName||"Audio"}</div>
-            <div class="audio-bar"><div class="audio-fill"></div></div>
-          </div>
-          <span class="audio-time">🎵</span>
-        </div>`;
-      } else {
-        mediaHtml = `<div class="card-media">
-          <div class="media-icon"><span>📄</span><p>File</p></div>
-        </div>`;
+    g.innerHTML=items.map(item=>{
+      const id=ss(item.id),owner=ss(item.ownerId||OWNER_ID),name=ss(item.fileName||"Unknown");
+      const tags=ss(Array.isArray(item.tags)?item.tags.join(","):"");
+      const blob=ss(item.blobUri||""),type=ss(item.mediaType||"");
+      const enc=encodeUri(item.blobUri||"");
+      const ta=Array.isArray(item.tags)&&item.tags.length?item.tags:[];
+      const isImg=item.mediaType&&item.mediaType.startsWith("image");
+      const isVid=item.mediaType&&item.mediaType.startsWith("video");
+      const isAud=item.mediaType&&item.mediaType.startsWith("audio");
+      const badge=isImg?"IMAGE":isVid?"VIDEO":isAud?"AUDIO":"FILE";
+      let media="";
+      if(isImg&&item.blobUri){
+        media=`<div class="card-img-wrap" onclick="viewImage('${blob}','${name}')"><img src="${enc}" alt="${name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\"video-placeholder\\"><span>🖼️</span><p>Preview unavailable</p></div>'"/><div class="img-overlay"><div class="img-overlay-icon">🔍</div></div></div>`;
+      }else if(isVid&&item.blobUri){
+        media=`<div class="card-video-wrap" onclick="playVideo('${blob}','${name}')"><div class="video-placeholder"><span>🎬</span><p>${item.fileName||"Video"}</p></div><div class="play-overlay"><div class="play-circle">▶</div></div></div>`;
+      }else if(isAud&&item.blobUri){
+        media=`<div class="card-audio"><div class="audio-header"><div class="audio-icon">🎵</div><div class="audio-meta"><div class="audio-title">${item.fileName||"Audio"}</div><div class="audio-sub">Audio File</div></div></div><div class="audio-controls"><button class="audio-btn" onclick="toggleAudio(this,'${blob}')">▶</button><div class="audio-progress"><div class="audio-progress-fill"></div></div><span class="audio-time">🎵</span></div></div>`;
+      }else{
+        media=`<div class="video-placeholder"><span>📄</span><p>${item.fileName||"File"}</p></div>`;
       }
-
-      return `<div class="card">
-        ${mediaHtml}
-        <div class="card-body">
-          <div class="card-title">${item.fileName||"Unknown"}</div>
-          <div class="card-date">${formatDate(item._ts)}</div>
-          ${tags.length ? `<div class="card-tags">${tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>` : ""}
-          <div class="card-actions">
-            <button class="btn-edit"
-              onclick="openEdit('${safeId}','${safeOwner}','${safeName}','${safeTags}','${safeBlob}','${safeType}')">
-              ✏️ Edit Info
-            </button>
-            <button class="btn-delete" onclick="deleteItem('${safeId}','${safeOwner}')">
-              🗑
-            </button>
-          </div>
-        </div>
-      </div>`;
+      return`<div class="card"><span class="card-type-badge">${badge}</span>${media}<div class="card-body"><div class="card-title">${item.fileName||"Unknown"}</div><div class="card-date">${formatDate(item._ts)}</div>${ta.length?`<div class="card-tags">${ta.map(t=>`<span class="tag">${t}</span>`).join("")}</div>`:""}<div class="card-actions"><button class="btn-edit-card" onclick="openEdit('${id}','${owner}','${name}','${tags}','${blob}','${type}')">✏️ Edit</button><button class="btn-delete-card" onclick="deleteItem('${id}','${owner}')">🗑</button></div></div></div>`;
     }).join("");
   }
 
-  async function loadGallery() {
-    setStatus("Loading gallery...", "info");
-    try {
-      const res = await fetch(GET_ALL_URL);
-      const data = await res.json();
-      allItems = data.Documents || data.value || data || [];
+  async function loadGallery(){
+    try{
+      const res=await fetch(GET_ALL_URL);
+      const data=await res.json();
+      allItems=data.Documents||data.value||data||[];
       document.getElementById("status").classList.remove("show");
-      renderGallery();
-    } catch(err) {
-      setStatus("Gallery error: " + err.message, "error");
-    }
+      updateStats();renderGallery();
+    }catch(err){setStatus("Gallery error: "+err.message,"error");}
   }
 
-  async function handleUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    setStatus("Uploading " + file.name + "...", "info");
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const base64 = e.target.result.split(",")[1];
-      try {
-        const res = await fetch(UPLOAD_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            fileName: file.name, fileContent: base64,
-            mediaType: file.type, ownerId: OWNER_ID, tags: []
-          })
-        });
-        if (res.ok || res.status === 201) {
-          setStatus("✅ Uploaded: " + file.name, "success");
+  async function handleUpload(event){
+    const file=event.target.files[0];
+    if(!file)return;
+    const prog=document.getElementById("uploadProgress");
+    const fill=document.getElementById("upFill");
+    document.getElementById("upLabel").textContent="Uploading "+file.name+"...";
+    prog.classList.add("show");fill.style.width="30%";
+    setStatus("Uploading "+file.name+"...","info");
+    const reader=new FileReader();
+    reader.onload=async(e)=>{
+      fill.style.width="60%";
+      const base64=e.target.result.split(",")[1];
+      try{
+        const res=await fetch(UPLOAD_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fileName:file.name,fileContent:base64,mediaType:file.type,ownerId:OWNER_ID,tags:[]})});
+        fill.style.width="100%";
+        if(res.ok||res.status===201){
+          setStatus("✅ Uploaded: "+file.name,"success");
+          setTimeout(()=>{prog.classList.remove("show");fill.style.width="0%";},800);
           loadGallery();
-        } else {
-          setStatus("Upload failed: " + res.status, "error");
-        }
-      } catch(err) {
-        setStatus("Error: " + err.message, "error");
-      }
+        }else{setStatus("Upload failed: "+res.status,"error");prog.classList.remove("show");}
+      }catch(err){setStatus("Error: "+err.message,"error");prog.classList.remove("show");}
     };
     reader.readAsDataURL(file);
-    event.target.value = "";
+    event.target.value="";
   }
 
-  function openEdit(id, ownerId, fileName, tags, blobUri, mediaType) {
-    editingId = id; editingOwnerId = ownerId;
-    editingBlobUri = blobUri; editingMediaType = mediaType;
-    document.getElementById("editFileName").value = fileName;
-    document.getElementById("editTags").value = tags;
+  function openEdit(id,ownerId,fileName,tags,blobUri,mediaType){
+    editingId=id;editingOwnerId=ownerId;editingBlobUri=blobUri;editingMediaType=mediaType;
+    document.getElementById("editFileName").value=fileName;
+    document.getElementById("editTags").value=tags;
     document.getElementById("editModal").classList.add("active");
   }
+  function closeModal(){document.getElementById("editModal").classList.remove("active");editingId=null;}
 
-  function closeModal() {
-    document.getElementById("editModal").classList.remove("active");
-    editingId = null;
+  async function saveEdit(){
+    if(!editingId)return;
+    const fileName=document.getElementById("editFileName").value;
+    const tags=document.getElementById("editTags").value.split(",").map(t=>t.trim()).filter(Boolean);
+    setStatus("Updating...","info");
+    try{
+      const res=await fetch(UPDATE_URL,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:editingId,ownerId:editingOwnerId,fileName,blobUri:editingBlobUri,mediaType:editingMediaType,tags})});
+      if(res.ok||res.status===200){setStatus("✅ Updated","success");closeModal();loadGallery();}
+      else setStatus("Update failed: "+res.status,"error");
+    }catch(err){setStatus("Error: "+err.message,"error");}
   }
 
-  async function saveEdit() {
-    if (!editingId) return;
-    const fileName = document.getElementById("editFileName").value;
-    const tags = document.getElementById("editTags").value.split(",").map(t=>t.trim()).filter(Boolean);
-    setStatus("Updating...", "info");
-    try {
-      const res = await fetch(UPDATE_URL, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: editingId, ownerId: editingOwnerId,
-          fileName, blobUri: editingBlobUri,
-          mediaType: editingMediaType, tags
-        })
-      });
-      if (res.ok || res.status === 200) {
-        setStatus("✅ Updated successfully", "success");
-        closeModal(); loadGallery();
-      } else {
-        setStatus("Update failed: " + res.status, "error");
-      }
-    } catch(err) {
-      setStatus("Error: " + err.message, "error");
-    }
+  async function deleteItem(id,ownerId){
+    if(!confirm("Delete this asset? This cannot be undone."))return;
+    setStatus("Deleting...","info");
+    try{
+      const res=await fetch(DELETE_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,ownerId})});
+      if(res.ok||res.status===204||res.status===200){setStatus("✅ Deleted","success");loadGallery();}
+      else setStatus("Delete failed: "+res.status,"error");
+    }catch(err){setStatus("Error: "+err.message,"error");}
   }
 
-  async function deleteItem(id, ownerId) {
-    if (!confirm("Delete this asset? This cannot be undone.")) return;
-    setStatus("Deleting...", "info");
-    try {
-      const res = await fetch(DELETE_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, ownerId })
-      });
-      if (res.ok || res.status === 204 || res.status === 200) {
-        setStatus("✅ Deleted", "success");
-        loadGallery();
-      } else {
-        setStatus("Delete failed: " + res.status, "error");
-      }
-    } catch(err) {
-      setStatus("Error: " + err.message, "error");
-    }
-  }
+  document.getElementById("viewerOverlay").addEventListener("click",function(e){if(e.target===this)closeViewer();});
+  document.getElementById("videoModal").addEventListener("click",function(e){if(e.target===this)closeVideo();});
+  document.getElementById("editModal").addEventListener("click",function(e){if(e.target===this)closeModal();});
 
   loadGallery();
 </script>
