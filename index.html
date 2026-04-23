@@ -457,12 +457,12 @@
       reader.onload = async (e) => {
         fill.style.width = "55%";
         const base64 = e.target.result.split(",")[1];
+        const safeName = file.name.replace(/\s+/g, "%20");
+        const blobUri = `${BLOB_DIRECT_BASE}/${safeName}`;
         try {
           const res = await fetch(UPLOAD_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            const safeName = file.name.replace(/\\s+/g, "%20");
-            const blobUri = `${BLOB_DIRECT_BASE}/${safeName}`;
             body: JSON.stringify({ fileName: file.name, fileContent: base64, mediaType: mimeType, ownerId: OWNER_ID, tags: [], blobUri: blobUri })
           });
           if (res.ok || res.status === 201) resolve();
