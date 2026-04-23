@@ -461,7 +461,9 @@
           const res = await fetch(UPLOAD_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ fileName: file.name, fileContent: base64, mediaType: mimeType, ownerId: OWNER_ID, tags: [] })
+            const safeName = file.name.replace(/\\s+/g, "%20");
+            const blobUri = `${BLOB_DIRECT_BASE}/${safeName}`;
+            body: JSON.stringify({ fileName: file.name, fileContent: base64, mediaType: mimeType, ownerId: OWNER_ID, tags: [], blobUri: blobUri })
           });
           if (res.ok || res.status === 201) resolve();
           else reject(new Error("Upload failed: HTTP " + res.status));
