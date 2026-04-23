@@ -218,7 +218,7 @@
   // Get it from: Azure Portal → mediacloudprostorage → Shared access signature
   // Set permissions: Read, Write, Create | Resource types: Object | Expiry: 1 year
   const BLOB_DIRECT_BASE = "https://mediacloudprostorage.blob.core.windows.net/media-uploads";
-  const BLOB_SAS_TOKEN   = ""; // <-- PASTE YOUR SAS TOKEN HERE (starts with ?sv=...)
+  const BLOB_SAS_TOKEN   = "?sv=2025-11-05&ss=bfqt&srt=o&sp=rwdlacupiytfx&se=2027-04-23T18:02:12Z&st=2026-04-23T09:47:12Z&spr=https&sig=yyLhFmWuVHNXsYJaByT9Ypu7du9TjYRSf6e%2BUILYC2k%3D";
   const LARGE_FILE_MB    = 10; // files bigger than this use direct upload
 
   const OWNER_ID = "demo-user-001";
