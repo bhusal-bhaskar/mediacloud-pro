@@ -268,9 +268,12 @@
   function encodeUri(uri) {
     if (!uri) return "";
     try {
+      // Append SAS token for blob storage URLs so media can be streamed/viewed
+      const needsSas = uri.includes("blob.core.windows.net") && !uri.includes("?sv=") && BLOB_SAS_TOKEN;
       const u = new URL(uri);
       u.pathname = u.pathname.split("/").map(p => encodeURIComponent(decodeURIComponent(p))).join("/");
-      return u.toString();
+      const base = u.toString();
+      return needsSas ? base + BLOB_SAS_TOKEN : base;
     } catch(e) {
       return uri.split("/").map((p,i) => i > 2 ? encodeURIComponent(p) : p).join("/");
     }
