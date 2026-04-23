@@ -108,11 +108,12 @@
     .video-modal-overlay video{max-width:92vw;max-height:85vh;border-radius:12px;}
     .video-modal-close{position:fixed;top:20px;right:24px;background:rgba(255,255,255,0.12);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
     .video-name{color:rgba(255,255,255,0.6);font-size:13px;margin-top:14px;}
-    .upload-progress{position:fixed;bottom:24px;right:24px;background:#1a1a2e;color:#fff;padding:16px 20px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.3);display:none;z-index:500;min-width:240px;}
+    .upload-progress{position:fixed;bottom:24px;right:24px;background:#1a1a2e;color:#fff;padding:16px 20px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.3);display:none;z-index:500;min-width:260px;}
     .upload-progress.show{display:block;}
     .up-label{font-size:13px;font-weight:600;margin-bottom:8px;}
     .up-bar{height:4px;background:#333;border-radius:2px;overflow:hidden;}
     .up-fill{height:100%;background:#c8f135;width:0%;transition:width 0.3s;border-radius:2px;}
+    .up-size{font-size:11px;color:#888;margin-top:6px;}
     @media(max-width:600px){header{padding:0 16px;}.hero{padding:32px 16px;}main{padding:20px 12px;}.gallery{grid-template-columns:1fr;}.logo-text{display:none;}}
   </style>
 </head>
@@ -136,7 +137,8 @@
   </div>
 </header>
 
-<input type="file" id="fileInput" style="display:none" accept="image/*,video/*,audio/*" onchange="handleUpload(event)"/>
+<!-- Accept ALL file types including mp4, mov, mp3 -->
+<input type="file" id="fileInput" style="display:none" accept="image/*,video/*,audio/*,.mp4,.mov,.avi,.mkv,.mp3,.wav,.aac,.m4a" onchange="handleUpload(event)"/>
 
 <div class="hero">
   <div class="hero-content">
@@ -200,6 +202,7 @@
 <div class="upload-progress" id="uploadProgress">
   <div class="up-label" id="upLabel">Uploading...</div>
   <div class="up-bar"><div class="up-fill" id="upFill"></div></div>
+  <div class="up-size" id="upSize"></div>
 </div>
 
 <script>
@@ -208,166 +211,308 @@
   const UPDATE_URL  = "https://prod-05.spaincentral.logic.azure.com:443/workflows/ff17882f7bee4ac381f99bc797454134/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=r3lwZCuyOoikhcJestDNPq41jdK1quNxhbo6Wfg2s40";
   const DELETE_URL  = "https://prod-03.spaincentral.logic.azure.com:443/workflows/064716e1a4744a5eba74506baa2b81d8/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=SDbC5bg89eFU2Qu87lUdgThGQZsfnjMGnyoY5FE3L_Q";
 
-  const OWNER_ID="demo-user-001";
-  let allItems=[], editingId=null, editingOwnerId=null, editingBlobUri=null, editingMediaType=null, currentFilter="all";
+  // ─── BLOB STORAGE DIRECT UPLOAD CONFIG ───────────────────────────────────
+  // For large files (videos > 10MB) we upload directly to Azure Blob Storage
+  // using a SAS URL, bypassing Logic Apps' 50MB body limit.
+  // To enable: replace with your actual storage account SAS URL
+  // Get it from: Azure Portal → mediacloudprostorage → Shared access signature
+  // Set permissions: Read, Write, Create | Resource types: Object | Expiry: 1 year
+  const BLOB_DIRECT_BASE = "https://mediacloudprostorage.blob.core.windows.net/media-uploads";
+  const BLOB_SAS_TOKEN   = ""; // <-- PASTE YOUR SAS TOKEN HERE (starts with ?sv=...)
+  const LARGE_FILE_MB    = 10; // files bigger than this use direct upload
 
-  function ss(s){return(s||"").replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/"/g,"&quot;");}
+  const OWNER_ID = "demo-user-001";
+  let allItems = [], editingId = null, editingOwnerId = null, editingBlobUri = null, editingMediaType = null, currentFilter = "all";
 
-  function encodeUri(uri){
-    if(!uri)return"";
-    try{const u=new URL(uri);const p=u.pathname.split('/');u.pathname=p.map(x=>encodeURIComponent(decodeURIComponent(x))).join('/');return u.toString();}
-    catch(e){return uri.split('/').map((p,i)=>i>2?encodeURIComponent(p):p).join('/');}
+  // ─── MEDIA TYPE DETECTION ─────────────────────────────────────────────────
+  // Fixes the filter bug: always normalise mediaType by checking both the
+  // stored value AND the file extension so old/incorrect records still filter.
+  const IMG_EXTS  = ["jpg","jpeg","png","gif","webp","bmp","svg","heic","heif","avif","tiff"];
+  const VID_EXTS  = ["mp4","mov","avi","mkv","webm","m4v","wmv","flv","3gp","ogv"];
+  const AUD_EXTS  = ["mp3","wav","aac","ogg","flac","m4a","opus","wma","aiff"];
+
+  function getMediaCategory(item) {
+    // 1. Trust a well-formed stored mediaType first
+    const mt = (item.mediaType || "").toLowerCase();
+    if (mt.startsWith("image/")) return "image";
+    if (mt.startsWith("video/")) return "video";
+    if (mt.startsWith("audio/")) return "audio";
+
+    // 2. Fall back to file extension (fixes old/bad records)
+    const ext = ((item.fileName || item.blobUri || "").split(".").pop() || "").toLowerCase();
+    if (IMG_EXTS.includes(ext)) return "image";
+    if (VID_EXTS.includes(ext)) return "video";
+    if (AUD_EXTS.includes(ext)) return "audio";
+
+    return "file";
   }
 
-  function formatDate(ts){if(!ts)return"";return new Date(ts*1000).toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});}
-
-  function setStatus(msg,type="info"){
-    const el=document.getElementById("status");
-    el.textContent=msg;el.className="status show "+type;
-    if(type==="success")setTimeout(()=>el.classList.remove("show"),3000);
+  // Detect media type from a File object (for upload)
+  function detectMimeType(file) {
+    if (file.type) return file.type; // browser-provided MIME
+    const ext = file.name.split(".").pop().toLowerCase();
+    const map = {
+      mp4:"video/mp4", mov:"video/quicktime", avi:"video/x-msvideo",
+      mkv:"video/x-matroska", webm:"video/webm", m4v:"video/mp4",
+      mp3:"audio/mpeg", wav:"audio/wav", aac:"audio/aac",
+      m4a:"audio/mp4", ogg:"audio/ogg", flac:"audio/flac",
+      jpg:"image/jpeg", jpeg:"image/jpeg", png:"image/png",
+      gif:"image/gif", webp:"image/webp", svg:"image/svg+xml"
+    };
+    return map[ext] || "application/octet-stream";
   }
 
-  function updateStats(){
-    document.getElementById("statTotal").textContent=allItems.length;
-    document.getElementById("statImages").textContent=allItems.filter(i=>i.mediaType&&i.mediaType.startsWith("image")).length;
-    document.getElementById("statVideos").textContent=allItems.filter(i=>i.mediaType&&i.mediaType.startsWith("video")).length;
-    document.getElementById("statAudio").textContent=allItems.filter(i=>i.mediaType&&i.mediaType.startsWith("audio")).length;
+  // ─── HELPERS ──────────────────────────────────────────────────────────────
+  function ss(s){ return (s||"").replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/"/g,"&quot;"); }
+
+  function encodeUri(uri) {
+    if (!uri) return "";
+    try {
+      const u = new URL(uri);
+      u.pathname = u.pathname.split("/").map(p => encodeURIComponent(decodeURIComponent(p))).join("/");
+      return u.toString();
+    } catch(e) {
+      return uri.split("/").map((p,i) => i > 2 ? encodeURIComponent(p) : p).join("/");
+    }
   }
 
-  function viewImage(blobUri,fileName){
-    document.getElementById("viewerImg").src=encodeUri(blobUri);
-    document.getElementById("viewerName").textContent=fileName;
+  function fmtSize(bytes) {
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1048576) return (bytes/1024).toFixed(1) + " KB";
+    return (bytes/1048576).toFixed(1) + " MB";
+  }
+
+  function formatDate(ts) {
+    if (!ts) return "";
+    return new Date(ts * 1000).toLocaleDateString("en-GB", {day:"numeric",month:"long",year:"numeric"});
+  }
+
+  function setStatus(msg, type="info") {
+    const el = document.getElementById("status");
+    el.textContent = msg; el.className = "status show " + type;
+    if (type === "success") setTimeout(() => el.classList.remove("show"), 3000);
+  }
+
+  function updateStats() {
+    document.getElementById("statTotal").textContent = allItems.length;
+    document.getElementById("statImages").textContent = allItems.filter(i => getMediaCategory(i) === "image").length;
+    document.getElementById("statVideos").textContent = allItems.filter(i => getMediaCategory(i) === "video").length;
+    document.getElementById("statAudio").textContent  = allItems.filter(i => getMediaCategory(i) === "audio").length;
+  }
+
+  // ─── VIEWERS ──────────────────────────────────────────────────────────────
+  function viewImage(blobUri, fileName) {
+    document.getElementById("viewerImg").src = encodeUri(blobUri);
+    document.getElementById("viewerName").textContent = fileName;
     document.getElementById("viewerOverlay").classList.add("active");
   }
-  function closeViewer(){document.getElementById("viewerOverlay").classList.remove("active");document.getElementById("viewerImg").src="";}
+  function closeViewer() { document.getElementById("viewerOverlay").classList.remove("active"); document.getElementById("viewerImg").src = ""; }
 
-  function playVideo(blobUri,fileName){
-    const v=document.getElementById("videoPlayer");
-    v.src=encodeUri(blobUri);
-    document.getElementById("videoName").textContent=fileName;
+  function playVideo(blobUri, fileName) {
+    const v = document.getElementById("videoPlayer");
+    v.src = encodeUri(blobUri);
+    document.getElementById("videoName").textContent = fileName;
     document.getElementById("videoModal").classList.add("active");
     v.play().catch(()=>{});
   }
-  function closeVideo(){const v=document.getElementById("videoPlayer");v.pause();v.src="";document.getElementById("videoModal").classList.remove("active");}
+  function closeVideo() { const v = document.getElementById("videoPlayer"); v.pause(); v.src = ""; document.getElementById("videoModal").classList.remove("active"); }
 
-  let currentAudio=null;
-  function toggleAudio(btn,blobUri){
-    if(currentAudio&&!currentAudio.paused){currentAudio.pause();currentAudio=null;btn.textContent="▶";return;}
-    if(currentAudio)currentAudio.pause();
-    currentAudio=new Audio(encodeUri(blobUri));
-    currentAudio.play().catch(e=>alert("Cannot play: "+e.message));
-    btn.textContent="⏸";
-    currentAudio.onended=()=>{btn.textContent="▶";currentAudio=null;};
+  let currentAudio = null;
+  function toggleAudio(btn, blobUri) {
+    if (currentAudio && !currentAudio.paused) { currentAudio.pause(); currentAudio = null; btn.textContent = "▶"; return; }
+    if (currentAudio) currentAudio.pause();
+    currentAudio = new Audio(encodeUri(blobUri));
+    currentAudio.play().catch(e => alert("Cannot play: " + e.message));
+    btn.textContent = "⏸";
+    currentAudio.onended = () => { btn.textContent = "▶"; currentAudio = null; };
   }
 
-  function filterGallery(type,btn){
-    currentFilter=type;
-    document.querySelectorAll(".filter-tab").forEach(t=>t.classList.remove("active"));
+  // ─── GALLERY RENDER ───────────────────────────────────────────────────────
+  function filterGallery(type, btn) {
+    currentFilter = type;
+    document.querySelectorAll(".filter-tab").forEach(t => t.classList.remove("active"));
     btn.classList.add("active");
     renderGallery();
   }
 
-  function renderGallery(){
-    const items=currentFilter==="all"?allItems:allItems.filter(i=>i.mediaType&&i.mediaType.startsWith(currentFilter));
-    document.getElementById("itemCount").textContent=items.length+" item"+(items.length!==1?"s":"");
-    const g=document.getElementById("gallery");
-    if(!items.length){
-      g.innerHTML=`<div class="empty-state"><div class="empty-icon">&#9729;</div><h3>No media yet</h3><p>Upload your first file using the Upload button above</p><button class="btn-empty-upload" onclick="document.getElementById('fileInput').click()">&#8679; Upload Now</button></div>`;
+  function renderGallery() {
+    const items = currentFilter === "all"
+      ? allItems
+      : allItems.filter(i => getMediaCategory(i) === currentFilter); // ← fixed filter
+
+    document.getElementById("itemCount").textContent = items.length + " item" + (items.length !== 1 ? "s" : "");
+    const g = document.getElementById("gallery");
+
+    if (!items.length) {
+      const msg = currentFilter === "all" ? "Upload your first file using the Upload button above" : `No ${currentFilter} files yet — upload some!`;
+      g.innerHTML = `<div class="empty-state"><div class="empty-icon">&#9729;</div><h3>No media yet</h3><p>${msg}</p><button class="btn-empty-upload" onclick="document.getElementById('fileInput').click()">&#8679; Upload Now</button></div>`;
       return;
     }
-    g.innerHTML=items.map(item=>{
-      const id=ss(item.id),owner=ss(item.ownerId||OWNER_ID),name=ss(item.fileName||"Unknown");
-      const tags=ss(Array.isArray(item.tags)?item.tags.join(","):"");
-      const blob=ss(item.blobUri||""),type=ss(item.mediaType||"");
-      const enc=encodeUri(item.blobUri||"");
-      const ta=Array.isArray(item.tags)&&item.tags.length?item.tags:[];
-      const isImg=item.mediaType&&item.mediaType.startsWith("image");
-      const isVid=item.mediaType&&item.mediaType.startsWith("video");
-      const isAud=item.mediaType&&item.mediaType.startsWith("audio");
-      const badge=isImg?"IMAGE":isVid?"VIDEO":isAud?"AUDIO":"FILE";
-      let media="";
-      if(isImg&&item.blobUri){
-        media=`<div class="card-img-wrap" onclick="viewImage('${blob}','${name}')"><img src="${enc}" alt="${name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\"video-placeholder\\"><span>🖼️</span><p>Preview unavailable</p></div>'"/><div class="img-overlay"><div class="img-overlay-icon">🔍</div></div></div>`;
-      }else if(isVid&&item.blobUri){
-        media=`<div class="card-video-wrap" onclick="playVideo('${blob}','${name}')"><div class="video-placeholder"><span>🎬</span><p>${item.fileName||"Video"}</p></div><div class="play-overlay"><div class="play-circle">▶</div></div></div>`;
-      }else if(isAud&&item.blobUri){
-        media=`<div class="card-audio"><div class="audio-header"><div class="audio-icon">🎵</div><div class="audio-meta"><div class="audio-title">${item.fileName||"Audio"}</div><div class="audio-sub">Audio File</div></div></div><div class="audio-controls"><button class="audio-btn" onclick="toggleAudio(this,'${blob}')">▶</button><div class="audio-progress"><div class="audio-progress-fill"></div></div><span class="audio-time">🎵</span></div></div>`;
-      }else{
-        media=`<div class="video-placeholder"><span>📄</span><p>${item.fileName||"File"}</p></div>`;
+
+    g.innerHTML = items.map(item => {
+      const cat  = getMediaCategory(item);
+      const id   = ss(item.id), owner = ss(item.ownerId || OWNER_ID), name = ss(item.fileName || "Unknown");
+      const tags = ss(Array.isArray(item.tags) ? item.tags.join(",") : (item.tags || ""));
+      const blob = ss(item.blobUri || ""), type = ss(item.mediaType || cat + "/unknown");
+      const enc  = encodeUri(item.blobUri || "");
+      const ta   = Array.isArray(item.tags) && item.tags.length ? item.tags : (item.tags ? String(item.tags).split(",").map(t=>t.trim()).filter(Boolean) : []);
+      const badge = cat === "image" ? "IMAGE" : cat === "video" ? "VIDEO" : cat === "audio" ? "AUDIO" : "FILE";
+
+      let media = "";
+      if (cat === "image" && item.blobUri) {
+        media = `<div class="card-img-wrap" onclick="viewImage('${blob}','${name}')"><img src="${enc}" alt="${name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\"video-placeholder\\"><span>🖼️</span><p>Preview unavailable</p></div>'"/><div class="img-overlay"><div class="img-overlay-icon">🔍</div></div></div>`;
+      } else if (cat === "video" && item.blobUri) {
+        media = `<div class="card-video-wrap" onclick="playVideo('${blob}','${name}')"><div class="video-placeholder"><span>🎬</span><p>${item.fileName || "Video"}</p></div><div class="play-overlay"><div class="play-circle">▶</div></div></div>`;
+      } else if (cat === "audio" && item.blobUri) {
+        media = `<div class="card-audio"><div class="audio-header"><div class="audio-icon">🎵</div><div class="audio-meta"><div class="audio-title">${item.fileName || "Audio"}</div><div class="audio-sub">Audio File</div></div></div><div class="audio-controls"><button class="audio-btn" onclick="toggleAudio(this,'${blob}')">▶</button><div class="audio-progress"><div class="audio-progress-fill"></div></div></div></div>`;
+      } else {
+        media = `<div class="video-placeholder"><span>📄</span><p>${item.fileName || "File"}</p></div>`;
       }
-      return`<div class="card"><span class="card-type-badge">${badge}</span>${media}<div class="card-body"><div class="card-title">${item.fileName||"Unknown"}</div><div class="card-date">${formatDate(item._ts)}</div>${ta.length?`<div class="card-tags">${ta.map(t=>`<span class="tag">${t}</span>`).join("")}</div>`:""}<div class="card-actions"><button class="btn-edit-card" onclick="openEdit('${id}','${owner}','${name}','${tags}','${blob}','${type}')">✏️ Edit</button><button class="btn-delete-card" onclick="deleteItem('${id}','${owner}')">🗑</button></div></div></div>`;
+
+      return `<div class="card"><span class="card-type-badge">${badge}</span>${media}<div class="card-body"><div class="card-title">${item.fileName || "Unknown"}</div><div class="card-date">${formatDate(item._ts)}</div>${ta.length ? `<div class="card-tags">${ta.map(t=>`<span class="tag">${t}</span>`).join("")}</div>` : ""}<div class="card-actions"><button class="btn-edit-card" onclick="openEdit('${id}','${owner}','${name}','${tags}','${blob}','${type}')">✏️ Edit</button><button class="btn-delete-card" onclick="deleteItem('${id}','${owner}')">🗑</button></div></div></div>`;
     }).join("");
   }
 
-  async function loadGallery(){
-    try{
-      const res=await fetch(GET_ALL_URL);
-      const data=await res.json();
-      allItems=data.Documents||data.value||data||[];
+  // ─── LOAD GALLERY ─────────────────────────────────────────────────────────
+  async function loadGallery() {
+    try {
+      const res  = await fetch(GET_ALL_URL);
+      const data = await res.json();
+      allItems   = data.Documents || data.value || (Array.isArray(data) ? data : []);
       document.getElementById("status").classList.remove("show");
-      updateStats();renderGallery();
-    }catch(err){setStatus("Gallery error: "+err.message,"error");}
+      updateStats(); renderGallery();
+    } catch(err) { setStatus("Gallery error: " + err.message, "error"); }
   }
 
-  async function handleUpload(event){
-    const file=event.target.files[0];
-    if(!file)return;
-    const prog=document.getElementById("uploadProgress");
-    const fill=document.getElementById("upFill");
-    document.getElementById("upLabel").textContent="Uploading "+file.name+"...";
-    prog.classList.add("show");fill.style.width="30%";
-    setStatus("Uploading "+file.name+"...","info");
-    const reader=new FileReader();
-    reader.onload=async(e)=>{
-      fill.style.width="60%";
-      const base64=e.target.result.split(",")[1];
-      try{
-        const res=await fetch(UPLOAD_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fileName:file.name,fileContent:base64,mediaType:file.type,ownerId:OWNER_ID,tags:[]})});
-        fill.style.width="100%";
-        if(res.ok||res.status===201){
-          setStatus("✅ Uploaded: "+file.name,"success");
-          setTimeout(()=>{prog.classList.remove("show");fill.style.width="0%";},800);
-          loadGallery();
-        }else{setStatus("Upload failed: "+res.status,"error");prog.classList.remove("show");}
-      }catch(err){setStatus("Error: "+err.message,"error");prog.classList.remove("show");}
-    };
-    reader.readAsDataURL(file);
-    event.target.value="";
+  // ─── UPLOAD ───────────────────────────────────────────────────────────────
+  async function handleUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    event.target.value = "";
+
+    const mimeType  = detectMimeType(file);
+    const sizeMB    = file.size / 1048576;
+    const prog      = document.getElementById("uploadProgress");
+    const fill      = document.getElementById("upFill");
+    const upSize    = document.getElementById("upSize");
+
+    document.getElementById("upLabel").textContent = "Uploading " + file.name + "...";
+    upSize.textContent = fmtSize(file.size);
+    prog.classList.add("show"); fill.style.width = "15%";
+    setStatus("Uploading " + file.name + " (" + fmtSize(file.size) + ")...", "info");
+
+    try {
+      // ── Strategy A: Large files → direct PUT to Blob Storage ──────────────
+      // This bypasses the Logic App 50 MB body limit for MP4 / MOV / large videos.
+      if (sizeMB > LARGE_FILE_MB && BLOB_SAS_TOKEN) {
+        await uploadDirectToBlob(file, mimeType, fill);
+      } else {
+        // ── Strategy B: Small files → base64 via Logic App (original method) ─
+        await uploadViaLogicApp(file, mimeType, fill);
+      }
+
+      fill.style.width = "100%";
+      setStatus("✅ Uploaded: " + file.name, "success");
+      setTimeout(() => { prog.classList.remove("show"); fill.style.width = "0%"; }, 900);
+      loadGallery();
+
+    } catch(err) {
+      setStatus("Upload error: " + err.message, "error");
+      prog.classList.remove("show");
+    }
   }
 
-  function openEdit(id,ownerId,fileName,tags,blobUri,mediaType){
-    editingId=id;editingOwnerId=ownerId;editingBlobUri=blobUri;editingMediaType=mediaType;
-    document.getElementById("editFileName").value=fileName;
-    document.getElementById("editTags").value=tags;
+  // Strategy A — direct PUT to Azure Blob Storage (large files / videos)
+  async function uploadDirectToBlob(file, mimeType, fill) {
+    fill.style.width = "40%";
+    const blobName = file.name.replace(/\s+/g, "_"); // no spaces in blob names
+    const blobUrl  = `${BLOB_DIRECT_BASE}/${encodeURIComponent(blobName)}${BLOB_SAS_TOKEN}`;
+
+    // Upload the raw bytes directly to Azure Blob Storage
+    const putRes = await fetch(blobUrl, {
+      method: "PUT",
+      headers: { "x-ms-blob-type": "BlockBlob", "Content-Type": mimeType },
+      body: file
+    });
+    if (!putRes.ok) throw new Error("Blob upload failed: " + putRes.status);
+    fill.style.width = "75%";
+
+    // Save metadata to Cosmos DB via Logic App (tiny payload — no file content)
+    const blobUri = `${BLOB_DIRECT_BASE}/${blobName}`;
+    const metaRes = await fetch(UPLOAD_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fileName: file.name, fileContent: "", mediaType: mimeType, ownerId: OWNER_ID, tags: [], blobUri })
+    });
+    if (!metaRes.ok && metaRes.status !== 201) throw new Error("Metadata save failed: " + metaRes.status);
+  }
+
+  // Strategy B — base64 via Logic App (images, audio, small files)
+  async function uploadViaLogicApp(file, mimeType, fill) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        fill.style.width = "55%";
+        const base64 = e.target.result.split(",")[1];
+        try {
+          const res = await fetch(UPLOAD_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fileName: file.name, fileContent: base64, mediaType: mimeType, ownerId: OWNER_ID, tags: [] })
+          });
+          if (res.ok || res.status === 201) resolve();
+          else reject(new Error("Upload failed: HTTP " + res.status));
+        } catch(err) { reject(err); }
+      };
+      reader.onerror = () => reject(new Error("File read failed"));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ─── EDIT / DELETE ────────────────────────────────────────────────────────
+  function openEdit(id, ownerId, fileName, tags, blobUri, mediaType) {
+    editingId = id; editingOwnerId = ownerId; editingBlobUri = blobUri; editingMediaType = mediaType;
+    document.getElementById("editFileName").value = fileName;
+    document.getElementById("editTags").value = tags;
     document.getElementById("editModal").classList.add("active");
   }
-  function closeModal(){document.getElementById("editModal").classList.remove("active");editingId=null;}
+  function closeModal() { document.getElementById("editModal").classList.remove("active"); editingId = null; }
 
-  async function saveEdit(){
-    if(!editingId)return;
-    const fileName=document.getElementById("editFileName").value;
-    const tags=document.getElementById("editTags").value.split(",").map(t=>t.trim()).filter(Boolean);
-    setStatus("Updating...","info");
-    try{
-      const res=await fetch(UPDATE_URL,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:editingId,ownerId:editingOwnerId,fileName,blobUri:editingBlobUri,mediaType:editingMediaType,tags})});
-      if(res.ok||res.status===200){setStatus("✅ Updated","success");closeModal();loadGallery();}
-      else setStatus("Update failed: "+res.status,"error");
-    }catch(err){setStatus("Error: "+err.message,"error");}
+  async function saveEdit() {
+    if (!editingId) return;
+    const fileName = document.getElementById("editFileName").value;
+    const tags = document.getElementById("editTags").value.split(",").map(t => t.trim()).filter(Boolean);
+    setStatus("Updating...", "info");
+    try {
+      const res = await fetch(UPDATE_URL, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editingId, ownerId: editingOwnerId, fileName, blobUri: editingBlobUri, mediaType: editingMediaType, tags })
+      });
+      if (res.ok || res.status === 200) { setStatus("✅ Updated", "success"); closeModal(); loadGallery(); }
+      else setStatus("Update failed: " + res.status, "error");
+    } catch(err) { setStatus("Error: " + err.message, "error"); }
   }
 
-  async function deleteItem(id,ownerId){
-    if(!confirm("Delete this asset? This cannot be undone."))return;
-    setStatus("Deleting...","info");
-    try{
-      const res=await fetch(DELETE_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,ownerId})});
-      if(res.ok||res.status===204||res.status===200){setStatus("✅ Deleted","success");loadGallery();}
-      else setStatus("Delete failed: "+res.status,"error");
-    }catch(err){setStatus("Error: "+err.message,"error");}
+  async function deleteItem(id, ownerId) {
+    if (!confirm("Delete this asset? This cannot be undone.")) return;
+    setStatus("Deleting...", "info");
+    try {
+      const res = await fetch(DELETE_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, ownerId })
+      });
+      if (res.ok || res.status === 204 || res.status === 200) { setStatus("✅ Deleted", "success"); loadGallery(); }
+      else setStatus("Delete failed: " + res.status, "error");
+    } catch(err) { setStatus("Error: " + err.message, "error"); }
   }
 
-  document.getElementById("viewerOverlay").addEventListener("click",function(e){if(e.target===this)closeViewer();});
-  document.getElementById("videoModal").addEventListener("click",function(e){if(e.target===this)closeVideo();});
-  document.getElementById("editModal").addEventListener("click",function(e){if(e.target===this)closeModal();});
+  // ─── EVENT LISTENERS ──────────────────────────────────────────────────────
+  document.getElementById("viewerOverlay").addEventListener("click", function(e){ if(e.target===this) closeViewer(); });
+  document.getElementById("videoModal").addEventListener("click", function(e){ if(e.target===this) closeVideo(); });
+  document.getElementById("editModal").addEventListener("click", function(e){ if(e.target===this) closeModal(); });
+  document.addEventListener("keydown", e => { if(e.key==="Escape"){ closeViewer(); closeVideo(); closeModal(); }});
 
   loadGallery();
 </script>
