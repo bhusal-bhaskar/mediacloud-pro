@@ -296,11 +296,19 @@ function openImage(idx){
   const lb = document.getElementById("lightbox");
   const img = document.getElementById("lbImg");
   const vid = document.getElementById("lbVideo");
-  img.style.display="block"; vid.style.display="none";
-  vid.pause(); vid.src="";
-  img.src = url;
+  // Stop any playing video first
+  vid.pause(); vid.src=""; vid.style.display="none";
+  // Reset image then set src
+  img.src="";
+  img.style.display="block";
+  img.style.maxWidth="92vw";
+  img.style.maxHeight="85vh";
+  img.style.objectFit="contain";
+  img.style.borderRadius="10px";
   document.getElementById("lbName").textContent = item.fileName||"";
   lb.classList.add("active");
+  // Set src AFTER lightbox is visible so browser renders it
+  setTimeout(()=>{ img.src = url; }, 50);
 }
 
 function openVideo(idx){
