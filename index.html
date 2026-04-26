@@ -263,7 +263,7 @@
   }
 
   // ─── HELPERS ──────────────────────────────────────────────────────────────
-  function ss(s){ return (s||"").replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/"/g,"&quot;"); }
+  function ss(s){ return JSON.stringify(s||"").slice(1,-1); }
 
   function encodeUri(uri) {
     if (!uri) return "";
