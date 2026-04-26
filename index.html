@@ -377,11 +377,23 @@
   }
 
   // ─── LOAD GALLERY ─────────────────────────────────────────────────────────
+  // Fix blobUri for any item where it is missing or only a relative path
+  function fixBlobUri(item) {
+    const base = "https://mediacloudprostorage.blob.core.windows.net/media-uploads/";
+    if (!item.blobUri || item.blobUri === "" || !item.blobUri.startsWith("http")) {
+      // construct from filename
+      item.blobUri = base + encodeURIComponent(item.fileName || "");
+    } else if (item.blobUri.startsWith("https://mediacloudprostorage.blob.core.windows.net/media-uploads/")) {
+      // already correct — do nothing
+    }
+    return item;
+  }
+
   async function loadGallery() {
     try {
       const res  = await fetch(GET_ALL_URL);
       const data = await res.json();
-      allItems   = data.Documents || data.value || (Array.isArray(data) ? data : []);
+      allItems   = (data.Documents || data.value || (Array.isArray(data) ? data : [])).map(fixBlobUri);
       document.getElementById("status").classList.remove("show");
       updateStats(); renderGallery();
     } catch(err) { setStatus("Gallery error: " + err.message, "error"); }
