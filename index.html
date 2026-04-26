@@ -32,8 +32,8 @@
     .hero-stat .num{font-size:1.6rem;font-weight:800;color:#c8f135;}
     .hero-stat .label{font-size:12px;color:#888;margin-top:2px;}
     main{max-width:1200px;margin:0 auto;padding:32px 24px;}
-    .status{padding:12px 18px;border-radius:10px;font-size:13px;margin-bottom:20px;display:none;font-weight:500;align-items:center;gap:8px;}
-    .status.show{display:flex;}
+    .status{padding:12px 18px;border-radius:10px;font-size:13px;margin-bottom:20px;display:none;font-weight:500;}
+    .status.show{display:block;}
     .status.success{background:#f0f9e0;color:#4a7a00;border:1px solid #c8f135;}
     .status.error{background:#fff0f0;color:#cc3333;border:1px solid #ffcccc;}
     .status.info{background:#f0f6ff;color:#2255aa;border:1px solid #cce0ff;}
@@ -46,36 +46,27 @@
     .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px;}
     .card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 14px rgba(0,0,0,0.07);transition:all 0.25s;position:relative;}
     .card:hover{transform:translateY(-4px);box-shadow:0 10px 28px rgba(0,0,0,0.12);}
-    .card-img-wrap{width:100%;height:200px;overflow:hidden;position:relative;background:#eee;cursor:pointer;}
-    .card-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s;display:block;}
-    .card-img-wrap:hover img{transform:scale(1.06);}
-    .img-overlay{position:absolute;inset:0;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;transition:background 0.3s;}
-    .card-img-wrap:hover .img-overlay{background:rgba(0,0,0,0.25);}
-    .img-overlay-icon{color:#fff;font-size:2rem;opacity:0;transition:opacity 0.3s;}
-    .card-img-wrap:hover .img-overlay-icon{opacity:1;}
-    .card-video-wrap{width:100%;height:200px;background:linear-gradient(135deg,#1a1a2e,#2d2d44);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;position:relative;cursor:pointer;}
-    .video-placeholder{width:100%;height:200px;background:linear-gradient(135deg,#1a1a2e,#2d2d44);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;}
-    .video-placeholder span{font-size:3rem;}.video-placeholder p{font-size:12px;color:#888;}
-    .play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);}
-    .play-circle{width:56px;height:56px;background:rgba(200,241,53,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#000;transition:transform 0.2s;}
-    .card-video-wrap:hover .play-circle{transform:scale(1.1);}
-    .card-audio{background:linear-gradient(135deg,#1a1a2e,#2d2d44);padding:20px 16px;}
-    .audio-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
-    .audio-icon{width:48px;height:48px;background:rgba(200,241,53,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;}
-    .audio-meta{flex:1;min-width:0;}
-    .audio-title{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .audio-sub{font-size:11px;color:#888;margin-top:2px;}
-    .audio-controls{display:flex;align-items:center;gap:10px;}
-    .audio-btn{width:36px;height:36px;background:#c8f135;border-radius:50%;border:none;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform 0.2s;}
-    .audio-btn:hover{transform:scale(1.1);}
-    .audio-progress{flex:1;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;overflow:hidden;}
-    .audio-progress-fill{height:100%;width:0%;background:#c8f135;border-radius:2px;}
+    .card-media{width:100%;height:200px;overflow:hidden;position:relative;background:#1a1a2e;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .card-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s;}
+    .card-media:hover img{transform:scale(1.06);}
+    .media-overlay{position:absolute;inset:0;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;transition:background 0.3s;}
+    .card-media:hover .media-overlay{background:rgba(0,0,0,0.3);}
+    .media-icon{color:#fff;font-size:2rem;opacity:0;transition:opacity 0.3s;}
+    .card-media:hover .media-icon{opacity:1;}
+    .play-circle{width:60px;height:60px;background:rgba(200,241,53,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:#000;transition:transform 0.2s;}
+    .card-media:hover .play-circle{transform:scale(1.1);}
+    .media-label{color:#aaa;font-size:12px;margin-top:8px;text-align:center;padding:0 12px;word-break:break-all;}
+    .card-audio-wrap{width:100%;height:200px;background:linear-gradient(135deg,#1a1a2e,#2d2d44);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;}
+    .audio-icon-big{font-size:3rem;}
+    .audio-title-sm{font-size:12px;color:#aaa;text-align:center;word-break:break-all;}
+    .audio-btn-big{width:48px;height:48px;background:#c8f135;border-radius:50%;border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;}
+    .audio-btn-big:hover{transform:scale(1.1);}
+    .card-type-badge{position:absolute;top:12px;left:12px;background:rgba(0,0,0,0.65);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:0.5px;z-index:2;}
     .card-body{padding:16px;}
     .card-title{font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:4px;word-break:break-word;line-height:1.3;}
     .card-date{font-size:12px;color:#aaa;margin-bottom:10px;}
     .card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
     .tag{background:#f0f9e0;color:#5a8a00;font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600;}
-    .card-type-badge{position:absolute;top:12px;left:12px;background:rgba(0,0,0,0.6);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:0.5px;backdrop-filter:blur(4px);}
     .card-actions{display:flex;gap:8px;}
     .btn-edit-card{flex:1;background:#f5f6fa;color:#333;border:none;padding:9px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;transition:all 0.2s;}
     .btn-edit-card:hover{background:#e8e8e8;}
@@ -86,30 +77,29 @@
     .empty-state h3{font-size:1.3rem;color:#333;margin-bottom:8px;font-weight:700;}
     .empty-state p{font-size:14px;color:#999;margin-bottom:24px;}
     .btn-empty-upload{background:linear-gradient(135deg,#c8f135,#9ec016);color:#000;border:none;padding:12px 28px;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;}
+    /* MODAL */
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(6px);justify-content:center;align-items:center;z-index:1000;}
     .modal-overlay.active{display:flex;}
-    .modal{background:#fff;border-radius:20px;padding:32px;width:480px;box-shadow:0 24px 64px rgba(0,0,0,0.2);}
+    .modal{background:#fff;border-radius:20px;padding:32px;width:90%;max-width:460px;box-shadow:0 24px 64px rgba(0,0,0,0.2);}
     .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
     .modal h2{font-size:1.1rem;font-weight:800;color:#1a1a2e;}
-    .modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;}
+    .modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;line-height:1;}
     .modal label{font-size:12px;font-weight:700;color:#888;display:block;margin-bottom:6px;letter-spacing:0.5px;text-transform:uppercase;}
-    .modal input{background:#f5f6fa;border:2px solid transparent;color:#1a1a2e;padding:12px 14px;border-radius:10px;width:100%;margin-bottom:16px;font-size:14px;outline:none;transition:border 0.2s;}
+    .modal input{background:#f5f6fa;border:2px solid transparent;color:#1a1a2e;padding:12px 14px;border-radius:10px;width:100%;margin-bottom:16px;font-size:14px;outline:none;transition:border 0.2s;font-family:inherit;}
     .modal input:focus{border-color:#c8f135;background:#fff;}
     .modal-actions{display:flex;gap:10px;margin-top:8px;}
     .btn-save-modal{flex:1;background:linear-gradient(135deg,#c8f135,#9ec016);color:#000;border:none;padding:13px;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;}
     .btn-cancel-modal{background:#f5f6fa;color:#666;border:none;padding:13px 20px;border-radius:10px;cursor:pointer;font-weight:600;font-size:14px;}
-    .viewer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.96);backdrop-filter:blur(10px);justify-content:center;align-items:center;z-index:3000;flex-direction:column;}
-    .viewer-overlay.active{display:flex;}
-    .viewer-overlay img{max-width:92vw;max-height:88vh;border-radius:12px;box-shadow:0 24px 64px rgba(0,0,0,0.6);display:block;}
-    .viewer-close{position:fixed;top:20px;right:24px;background:rgba(255,255,255,0.12);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-    .viewer-name{color:rgba(255,255,255,0.6);font-size:13px;margin-top:14px;}
-    .video-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.96);backdrop-filter:blur(10px);justify-content:center;align-items:center;z-index:3000;flex-direction:column;}
-    .video-modal-overlay.active{display:flex;}
-    .video-modal-overlay video{max-width:92vw;max-height:85vh;border-radius:12px;}
-    .video-modal-close{position:fixed;top:20px;right:24px;background:rgba(255,255,255,0.12);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-    .video-name{color:rgba(255,255,255,0.6);font-size:13px;margin-top:14px;}
-    .upload-progress{position:fixed;bottom:24px;right:24px;background:#1a1a2e;color:#fff;padding:16px 20px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.3);display:none;z-index:500;min-width:260px;}
-    .upload-progress.show{display:block;}
+    /* LIGHTBOX */
+    .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:5000;flex-direction:column;align-items:center;justify-content:center;}
+    .lightbox.active{display:flex;}
+    .lightbox img{max-width:92vw;max-height:85vh;border-radius:10px;object-fit:contain;display:block;}
+    .lightbox video{max-width:92vw;max-height:85vh;border-radius:10px;outline:none;}
+    .lightbox-close{position:fixed;top:18px;right:22px;background:rgba(255,255,255,0.15);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5001;}
+    .lightbox-name{color:rgba(255,255,255,0.55);font-size:13px;margin-top:14px;max-width:80vw;text-align:center;word-break:break-all;}
+    /* UPLOAD PROGRESS */
+    .upload-toast{position:fixed;bottom:24px;right:24px;background:#1a1a2e;color:#fff;padding:16px 20px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.3);display:none;z-index:500;min-width:260px;}
+    .upload-toast.show{display:block;}
     .up-label{font-size:13px;font-weight:600;margin-bottom:8px;}
     .up-bar{height:4px;background:#333;border-radius:2px;overflow:hidden;}
     .up-fill{height:100%;background:#c8f135;width:0%;transition:width 0.3s;border-radius:2px;}
@@ -137,8 +127,9 @@
   </div>
 </header>
 
-<!-- Accept ALL file types including mp4, mov, mp3 -->
-<input type="file" id="fileInput" style="display:none" accept="image/*,video/*,audio/*,.mp4,.mov,.avi,.mkv,.mp3,.wav,.aac,.m4a" onchange="handleUpload(event)"/>
+<input type="file" id="fileInput" style="display:none"
+  accept="image/*,video/*,audio/*,.mp4,.mov,.avi,.mkv,.mp3,.wav,.aac,.m4a"
+  onchange="handleUpload(event)"/>
 
 <div class="hero">
   <div class="hero-content">
@@ -166,10 +157,11 @@
     <span class="item-count" id="itemCount"></span>
   </div>
   <div class="gallery" id="gallery">
-    <div class="empty-state"><div class="empty-icon">&#9729;</div><h3>Loading your media...</h3><p>Connecting to Azure...</p></div>
+    <div class="empty-state"><div class="empty-icon">&#9729;</div><h3>Loading...</h3><p>Connecting to Azure...</p></div>
   </div>
 </main>
 
+<!-- EDIT MODAL -->
 <div class="modal-overlay" id="editModal">
   <div class="modal">
     <div class="modal-header">
@@ -179,7 +171,7 @@
     <label>File Name</label>
     <input type="text" id="editFileName" placeholder="Enter file name"/>
     <label>Tags <span style="font-weight:400;color:#bbb;text-transform:none">(comma separated)</span></label>
-    <input type="text" id="editTags" placeholder="e.g. nature, travel, sunset"/>
+    <input type="text" id="editTags" placeholder="e.g. nature, travel"/>
     <div class="modal-actions">
       <button class="btn-cancel-modal" onclick="closeModal()">Cancel</button>
       <button class="btn-save-modal" onclick="saveEdit()">Save Changes</button>
@@ -187,351 +179,377 @@
   </div>
 </div>
 
-<div class="viewer-overlay" id="viewerOverlay">
-  <button class="viewer-close" onclick="closeViewer()">✕</button>
-  <img id="viewerImg" src="" alt=""/>
-  <p class="viewer-name" id="viewerName"></p>
+<!-- IMAGE / VIDEO LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lbImg" src="" alt="" style="display:none"/>
+  <video id="lbVideo" controls style="display:none"></video>
+  <p class="lightbox-name" id="lbName"></p>
 </div>
 
-<div class="video-modal-overlay" id="videoModal">
-  <button class="video-modal-close" onclick="closeVideo()">✕</button>
-  <video id="videoPlayer" controls></video>
-  <p class="video-name" id="videoName"></p>
-</div>
-
-<div class="upload-progress" id="uploadProgress">
+<!-- UPLOAD TOAST -->
+<div class="upload-toast" id="uploadToast">
   <div class="up-label" id="upLabel">Uploading...</div>
   <div class="up-bar"><div class="up-fill" id="upFill"></div></div>
   <div class="up-size" id="upSize"></div>
 </div>
 
 <script>
-  const UPLOAD_URL  = "https://prod-05.spaincentral.logic.azure.com:443/workflows/f9514801f7d24174b297c3a28c35a585/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=i_cxwvSIOe7UkJQXKUZrEs8qABLTMh4c4FfJYNg2vm0";
-  const GET_ALL_URL = "https://prod-28.spaincentral.logic.azure.com:443/workflows/a5f92eec70bb412f896a01c37d026b44/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=QzHf1fdnQgW6Sy88xOckIW9zQLJ-qRU33P9nbLoO_vU";
-  const UPDATE_URL  = "https://prod-05.spaincentral.logic.azure.com:443/workflows/ff17882f7bee4ac381f99bc797454134/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=r3lwZCuyOoikhcJestDNPq41jdK1quNxhbo6Wfg2s40";
-  const DELETE_URL  = "https://prod-03.spaincentral.logic.azure.com:443/workflows/064716e1a4744a5eba74506baa2b81d8/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=SDbC5bg89eFU2Qu87lUdgThGQZsfnjMGnyoY5FE3L_Q";
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+const UPLOAD_URL  = "https://prod-05.spaincentral.logic.azure.com:443/workflows/f9514801f7d24174b297c3a28c35a585/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=i_cxwvSIOe7UkJQXKUZrEs8qABLTMh4c4FfJYNg2vm0";
+const GET_ALL_URL = "https://prod-28.spaincentral.logic.azure.com:443/workflows/a5f92eec70bb412f896a01c37d026b44/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=QzHf1fdnQgW6Sy88xOckIW9zQLJ-qRU33P9nbLoO_vU";
+const UPDATE_URL  = "https://prod-05.spaincentral.logic.azure.com:443/workflows/ff17882f7bee4ac381f99bc797454134/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=r3lwZCuyOoikhcJestDNPq41jdK1quNxhbo6Wfg2s40";
+const DELETE_URL  = "https://prod-03.spaincentral.logic.azure.com:443/workflows/064716e1a4744a5eba74506baa2b81d8/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=SDbC5bg89eFU2Qu87lUdgThGQZsfnjMGnyoY5FE3L_Q";
 
-  // ─── BLOB STORAGE DIRECT UPLOAD CONFIG ───────────────────────────────────
-  // For large files (videos > 10MB) we upload directly to Azure Blob Storage
-  // using a SAS URL, bypassing Logic Apps' 50MB body limit.
-  // To enable: replace with your actual storage account SAS URL
-  // Get it from: Azure Portal → mediacloudprostorage → Shared access signature
-  // Set permissions: Read, Write, Create | Resource types: Object | Expiry: 1 year
-  const BLOB_DIRECT_BASE = "https://mediacloudprostorage.blob.core.windows.net/media-uploads";
-  const BLOB_SAS_TOKEN   = "?sv=2025-11-05&ss=bfqt&srt=o&sp=rwdlacupiytfx&se=2027-04-23T18:02:12Z&st=2026-04-23T09:47:12Z&spr=https&sig=yyLhFmWuVHNXsYJaByT9Ypu7du9TjYRSf6e%2BUILYC2k%3D";
-  const LARGE_FILE_MB    = 10; // files bigger than this use direct upload
+const BLOB_BASE    = "https://mediacloudprostorage.blob.core.windows.net/media-uploads";
+const BLOB_SAS     = "?sv=2025-11-05&ss=bfqt&srt=o&sp=rwdlacupiytfx&se=2027-04-23T18:02:12Z&st=2026-04-23T09:47:12Z&spr=https&sig=yyLhFmWuVHNXsYJaByT9Ypu7du9TjYRSf6e%2BUILYC2k%3D";
+const LARGE_MB     = 10;
+const OWNER_ID     = "demo-user-001";
 
-  const OWNER_ID = "demo-user-001";
-  let allItems = [], editingId = null, editingOwnerId = null, editingBlobUri = null, editingMediaType = null, currentFilter = "all";
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let allItems = [], currentFilter = "all";
+let editId = null, editOwnerId = null, editBlobUri = null, editMediaType = null;
+let currentAudioEl = null, currentAudioBtn = null;
 
-  // ─── MEDIA TYPE DETECTION ─────────────────────────────────────────────────
-  // Fixes the filter bug: always normalise mediaType by checking both the
-  // stored value AND the file extension so old/incorrect records still filter.
-  const IMG_EXTS  = ["jpg","jpeg","png","gif","webp","bmp","svg","heic","heif","avif","tiff"];
-  const VID_EXTS  = ["mp4","mov","avi","mkv","webm","m4v","wmv","flv","3gp","ogv"];
-  const AUD_EXTS  = ["mp3","wav","aac","ogg","flac","m4a","opus","wma","aiff"];
+// ── MEDIA TYPE HELPERS ────────────────────────────────────────────────────────
+const IMG_EXT  = ["jpg","jpeg","png","gif","webp","bmp","svg","heic","heif","avif","tiff"];
+const VID_EXT  = ["mp4","mov","avi","mkv","webm","m4v","wmv","flv","3gp","ogv"];
+const AUD_EXT  = ["mp3","wav","aac","ogg","flac","m4a","opus","wma","aiff"];
 
-  function getMediaCategory(item) {
-    // 1. Trust a well-formed stored mediaType first
-    const mt = (item.mediaType || "").toLowerCase();
-    if (mt.startsWith("image/")) return "image";
-    if (mt.startsWith("video/")) return "video";
-    if (mt.startsWith("audio/")) return "audio";
+function extOf(name){ return (name||"").split(".").pop().toLowerCase(); }
 
-    // 2. Fall back to file extension (fixes old/bad records)
-    const ext = ((item.fileName || item.blobUri || "").split(".").pop() || "").toLowerCase();
-    if (IMG_EXTS.includes(ext)) return "image";
-    if (VID_EXTS.includes(ext)) return "video";
-    if (AUD_EXTS.includes(ext)) return "audio";
+function categoryOf(item){
+  const mt = (item.mediaType||"").toLowerCase();
+  if(mt.startsWith("image/")) return "image";
+  if(mt.startsWith("video/")) return "video";
+  if(mt.startsWith("audio/")) return "audio";
+  const ext = extOf(item.fileName||item.blobUri||"");
+  if(IMG_EXT.includes(ext)) return "image";
+  if(VID_EXT.includes(ext)) return "video";
+  if(AUD_EXT.includes(ext)) return "audio";
+  return "file";
+}
 
-    return "file";
+function mimeOf(file){
+  if(file.type) return file.type;
+  const m = {mp4:"video/mp4",mov:"video/quicktime",avi:"video/x-msvideo",mkv:"video/x-matroska",
+    webm:"video/webm",m4v:"video/mp4",mp3:"audio/mpeg",wav:"audio/wav",aac:"audio/aac",
+    m4a:"audio/mp4",ogg:"audio/ogg",flac:"audio/flac",jpg:"image/jpeg",jpeg:"image/jpeg",
+    png:"image/png",gif:"image/gif",webp:"image/webp",svg:"image/svg+xml"};
+  return m[extOf(file.name)]||"application/octet-stream";
+}
+
+// ── BLOB URI HELPERS ──────────────────────────────────────────────────────────
+// Build the correct public blob URL from filename
+function buildBlobUri(fileName){
+  // encode each path segment but keep slashes
+  return BLOB_BASE + "/" + fileName.split("/").map(encodeURIComponent).join("/");
+}
+
+// Get the URL to actually load the media (adds SAS token for streaming)
+function mediaUrl(blobUri){
+  if(!blobUri) return "";
+  // If it already has a SAS token, return as-is
+  if(blobUri.includes("?sv=")) return blobUri;
+  // Add SAS token for blob storage URLs
+  if(blobUri.includes("blob.core.windows.net")){
+    // Make sure the path segments are encoded
+    try{
+      const u = new URL(blobUri);
+      u.pathname = u.pathname.split("/").map(p=>encodeURIComponent(decodeURIComponent(p))).join("/");
+      return u.toString() + BLOB_SAS;
+    }catch(e){ return blobUri + BLOB_SAS; }
+  }
+  return blobUri;
+}
+
+// Fix blobUri for items where it is missing or relative
+function fixItem(item){
+  if(!item.blobUri || !item.blobUri.startsWith("http")){
+    item.blobUri = buildBlobUri(item.fileName||"");
+  }
+  return item;
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function fmtDate(ts){ if(!ts)return""; return new Date(ts*1000).toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"}); }
+function fmtSize(b){ if(b<1048576)return(b/1024).toFixed(1)+" KB"; return(b/1048576).toFixed(1)+" MB"; }
+
+function setStatus(msg,type="info"){
+  const el=document.getElementById("status");
+  el.textContent=msg; el.className="status show "+type;
+  if(type==="success") setTimeout(()=>el.classList.remove("show"),3000);
+}
+
+function updateStats(){
+  document.getElementById("statTotal").textContent=allItems.length;
+  document.getElementById("statImages").textContent=allItems.filter(i=>categoryOf(i)==="image").length;
+  document.getElementById("statVideos").textContent=allItems.filter(i=>categoryOf(i)==="video").length;
+  document.getElementById("statAudio").textContent=allItems.filter(i=>categoryOf(i)==="audio").length;
+}
+
+// ── LIGHTBOX ──────────────────────────────────────────────────────────────────
+function openImage(idx){
+  const item = allItems[idx];
+  if(!item) return;
+  const url = mediaUrl(item.blobUri);
+  const lb = document.getElementById("lightbox");
+  const img = document.getElementById("lbImg");
+  const vid = document.getElementById("lbVideo");
+  img.style.display="block"; vid.style.display="none";
+  vid.pause(); vid.src="";
+  img.src = url;
+  document.getElementById("lbName").textContent = item.fileName||"";
+  lb.classList.add("active");
+}
+
+function openVideo(idx){
+  const item = allItems[idx];
+  if(!item) return;
+  const url = mediaUrl(item.blobUri);
+  const lb = document.getElementById("lightbox");
+  const img = document.getElementById("lbImg");
+  const vid = document.getElementById("lbVideo");
+  img.style.display="none"; vid.style.display="block";
+  img.src="";
+  vid.src = url;
+  document.getElementById("lbName").textContent = item.fileName||"";
+  lb.classList.add("active");
+  vid.play().catch(()=>{});
+}
+
+function closeLightbox(){
+  const lb=document.getElementById("lightbox");
+  const vid=document.getElementById("lbVideo");
+  vid.pause(); vid.src="";
+  document.getElementById("lbImg").src="";
+  lb.classList.remove("active");
+}
+
+// ── AUDIO ─────────────────────────────────────────────────────────────────────
+function toggleAudio(btn, idx){
+  const item = allItems[idx];
+  if(!item) return;
+  // Stop previous audio
+  if(currentAudioEl){
+    currentAudioEl.pause();
+    currentAudioEl.src="";
+    if(currentAudioBtn) currentAudioBtn.textContent="▶";
+    if(currentAudioBtn===btn){ currentAudioEl=null; currentAudioBtn=null; return; }
+  }
+  const url = mediaUrl(item.blobUri);
+  currentAudioEl = new Audio(url);
+  currentAudioBtn = btn;
+  btn.textContent="⏸";
+  currentAudioEl.play().catch(e=>{ setStatus("Cannot play audio: "+e.message,"error"); btn.textContent="▶"; });
+  currentAudioEl.onended=()=>{ btn.textContent="▶"; currentAudioEl=null; currentAudioBtn=null; };
+  currentAudioEl.onerror=()=>{ setStatus("Audio load failed","error"); btn.textContent="▶"; currentAudioEl=null; currentAudioBtn=null; };
+}
+
+// ── GALLERY ───────────────────────────────────────────────────────────────────
+function filterGallery(type,btn){
+  currentFilter=type;
+  document.querySelectorAll(".filter-tab").forEach(t=>t.classList.remove("active"));
+  btn.classList.add("active");
+  renderGallery();
+}
+
+function renderGallery(){
+  const items = currentFilter==="all" ? allItems : allItems.filter(i=>categoryOf(i)===currentFilter);
+  document.getElementById("itemCount").textContent = items.length+" item"+(items.length!==1?"s":"");
+  const g = document.getElementById("gallery");
+
+  if(!items.length){
+    g.innerHTML=`<div class="empty-state"><div class="empty-icon">&#9729;</div><h3>No media yet</h3><p>Upload your first file!</p><button class="btn-empty-upload" onclick="document.getElementById('fileInput').click()">&#8679; Upload Now</button></div>`;
+    return;
   }
 
-  // Detect media type from a File object (for upload)
-  function detectMimeType(file) {
-    if (file.type) return file.type; // browser-provided MIME
-    const ext = file.name.split(".").pop().toLowerCase();
-    const map = {
-      mp4:"video/mp4", mov:"video/quicktime", avi:"video/x-msvideo",
-      mkv:"video/x-matroska", webm:"video/webm", m4v:"video/mp4",
-      mp3:"audio/mpeg", wav:"audio/wav", aac:"audio/aac",
-      m4a:"audio/mp4", ogg:"audio/ogg", flac:"audio/flac",
-      jpg:"image/jpeg", jpeg:"image/jpeg", png:"image/png",
-      gif:"image/gif", webp:"image/webp", svg:"image/svg+xml"
+  // We use data-idx to safely reference items — no string escaping issues with special chars
+  g.innerHTML = items.map((item, i) => {
+    // Find the real index in allItems
+    const idx = allItems.indexOf(item);
+    const cat = categoryOf(item);
+    const badge = cat==="image"?"IMAGE":cat==="video"?"VIDEO":cat==="audio"?"AUDIO":"FILE";
+    const url = mediaUrl(item.blobUri);
+    const dateStr = fmtDate(item._ts);
+    const tagsArr = Array.isArray(item.tags) ? item.tags : (item.tags?String(item.tags).split(",").map(t=>t.trim()).filter(t=>t&&t!=="[]"):[]);
+    const tagsHtml = tagsArr.length ? `<div class="card-tags">${tagsArr.map(t=>`<span class="tag">${escHtml(t)}</span>`).join("")}</div>` : "";
+
+    let mediaHtml = "";
+    if(cat==="image"){
+      mediaHtml = `<div class="card-media" onclick="openImage(${idx})">
+        <img src="${url}" alt="${escHtml(item.fileName||'')}" loading="lazy"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div class="media-overlay" style="display:none;flex-direction:column;gap:8px;">
+          <span style="font-size:2.5rem">🖼️</span>
+          <span class="media-label">${escHtml(item.fileName||'')}</span>
+        </div>
+        <div class="media-overlay"><div class="media-icon">🔍</div></div>
+      </div>`;
+    } else if(cat==="video"){
+      mediaHtml = `<div class="card-media" onclick="openVideo(${idx})">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+          <div class="play-circle">▶</div>
+          <span class="media-label">${escHtml(item.fileName||'Video')}</span>
+        </div>
+      </div>`;
+    } else if(cat==="audio"){
+      mediaHtml = `<div class="card-audio-wrap">
+        <div class="audio-icon-big">🎵</div>
+        <div class="audio-title-sm">${escHtml(item.fileName||'Audio')}</div>
+        <button class="audio-btn-big" onclick="toggleAudio(this,${idx})">▶</button>
+      </div>`;
+    } else {
+      mediaHtml = `<div class="card-media" style="cursor:default;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+          <span style="font-size:3rem">📄</span>
+          <span class="media-label">${escHtml(item.fileName||'File')}</span>
+        </div>
+      </div>`;
+    }
+
+    return `<div class="card">
+      <span class="card-type-badge">${badge}</span>
+      ${mediaHtml}
+      <div class="card-body">
+        <div class="card-title">${escHtml(item.fileName||'Unknown')}</div>
+        <div class="card-date">${dateStr}</div>
+        ${tagsHtml}
+        <div class="card-actions">
+          <button class="btn-edit-card" onclick="openEdit(${idx})">✏️ Edit</button>
+          <button class="btn-delete-card" onclick="deleteItem(${idx})">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// Safe HTML escape — used only for display text, NOT for onclick attributes
+function escHtml(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+// ── LOAD ──────────────────────────────────────────────────────────────────────
+async function loadGallery(){
+  try{
+    const res = await fetch(GET_ALL_URL);
+    const data = await res.json();
+    allItems = (data.Documents||data.value||(Array.isArray(data)?data:[])).map(fixItem);
+    document.getElementById("status").classList.remove("show");
+    updateStats(); renderGallery();
+  }catch(err){ setStatus("Gallery error: "+err.message,"error"); }
+}
+
+// ── UPLOAD ────────────────────────────────────────────────────────────────────
+async function handleUpload(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  event.target.value="";
+
+  const mime = mimeOf(file);
+  const sizeMB = file.size/1048576;
+  const toast = document.getElementById("uploadToast");
+  const fill = document.getElementById("upFill");
+  document.getElementById("upLabel").textContent = "Uploading "+file.name+"...";
+  document.getElementById("upSize").textContent = fmtSize(file.size);
+  toast.classList.add("show"); fill.style.width="15%";
+  setStatus("Uploading "+file.name+"...","info");
+
+  try{
+    if(sizeMB > LARGE_MB){
+      await uploadDirect(file, mime, fill);
+    } else {
+      await uploadBase64(file, mime, fill);
+    }
+    fill.style.width="100%";
+    setStatus("✅ Uploaded: "+file.name,"success");
+    setTimeout(()=>{ toast.classList.remove("show"); fill.style.width="0%"; },1000);
+    loadGallery();
+  }catch(err){
+    setStatus("Upload error: "+err.message,"error");
+    toast.classList.remove("show");
+  }
+}
+
+// Direct PUT to Blob Storage (large files)
+async function uploadDirect(file, mime, fill){
+  fill.style.width="40%";
+  const safeName = file.name.replace(/\s+/g,"_");
+  const blobUrl = BLOB_BASE+"/"+encodeURIComponent(safeName)+BLOB_SAS;
+  const putRes = await fetch(blobUrl,{method:"PUT",headers:{"x-ms-blob-type":"BlockBlob","Content-Type":mime},body:file});
+  if(!putRes.ok) throw new Error("Blob upload failed: "+putRes.status);
+  fill.style.width="75%";
+  const blobUri = BLOB_BASE+"/"+encodeURIComponent(safeName);
+  const metaRes = await fetch(UPLOAD_URL,{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({fileName:file.name,fileContent:"",mediaType:mime,ownerId:OWNER_ID,tags:[],blobUri})});
+  if(!metaRes.ok && metaRes.status!==201) throw new Error("Metadata save failed: "+metaRes.status);
+}
+
+// Base64 via Logic App (small files)
+async function uploadBase64(file, mime, fill){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = async(e)=>{
+      fill.style.width="55%";
+      const base64 = e.target.result.split(",")[1];
+      const blobUri = buildBlobUri(file.name);
+      try{
+        const res = await fetch(UPLOAD_URL,{method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({fileName:file.name,fileContent:base64,mediaType:mime,ownerId:OWNER_ID,tags:[],blobUri})});
+        if(res.ok||res.status===201) resolve();
+        else reject(new Error("Upload failed: HTTP "+res.status));
+      }catch(err){ reject(err); }
     };
-    return map[ext] || "application/octet-stream";
-  }
+    reader.onerror=()=>reject(new Error("File read failed"));
+    reader.readAsDataURL(file);
+  });
+}
 
-  // ─── HELPERS ──────────────────────────────────────────────────────────────
-  function ss(s){ return JSON.stringify(s||"").slice(1,-1); }
+// ── EDIT ──────────────────────────────────────────────────────────────────────
+function openEdit(idx){
+  const item = allItems[idx];
+  if(!item) return;
+  editId=item.id; editOwnerId=item.ownerId||OWNER_ID;
+  editBlobUri=item.blobUri; editMediaType=item.mediaType||"";
+  const tagsArr = Array.isArray(item.tags)?item.tags:(item.tags?String(item.tags).split(",").map(t=>t.trim()).filter(t=>t&&t!=="[]"):[]);
+  document.getElementById("editFileName").value = item.fileName||"";
+  document.getElementById("editTags").value = tagsArr.join(", ");
+  document.getElementById("editModal").classList.add("active");
+}
 
-  function encodeUri(uri) {
-    if (!uri) return "";
-    try {
-      // Append SAS token for blob storage URLs so media can be streamed/viewed
-      const needsSas = uri.includes("blob.core.windows.net") && !uri.includes("?sv=") && BLOB_SAS_TOKEN;
-      const u = new URL(uri);
-      u.pathname = u.pathname.split("/").map(p => encodeURIComponent(decodeURIComponent(p))).join("/");
-      const base = u.toString();
-      return needsSas ? base + BLOB_SAS_TOKEN : base;
-    } catch(e) {
-      return uri.split("/").map((p,i) => i > 2 ? encodeURIComponent(p) : p).join("/");
-    }
-  }
+function closeModal(){ document.getElementById("editModal").classList.remove("active"); editId=null; }
 
-  function fmtSize(bytes) {
-    if (bytes < 1024) return bytes + " B";
-    if (bytes < 1048576) return (bytes/1024).toFixed(1) + " KB";
-    return (bytes/1048576).toFixed(1) + " MB";
-  }
+async function saveEdit(){
+  if(!editId) return;
+  const fileName = document.getElementById("editFileName").value.trim();
+  const tags = document.getElementById("editTags").value.split(",").map(t=>t.trim()).filter(Boolean);
+  setStatus("Updating...","info");
+  try{
+    const res = await fetch(UPDATE_URL,{method:"PUT",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({id:editId,ownerId:editOwnerId,fileName,blobUri:editBlobUri,mediaType:editMediaType,tags})});
+    if(res.ok||res.status===200){ setStatus("✅ Updated","success"); closeModal(); loadGallery(); }
+    else setStatus("Update failed: "+res.status,"error");
+  }catch(err){ setStatus("Error: "+err.message,"error"); }
+}
 
-  function formatDate(ts) {
-    if (!ts) return "";
-    return new Date(ts * 1000).toLocaleDateString("en-GB", {day:"numeric",month:"long",year:"numeric"});
-  }
+// ── DELETE ────────────────────────────────────────────────────────────────────
+async function deleteItem(idx){
+  const item = allItems[idx];
+  if(!item||!confirm("Delete this asset? This cannot be undone.")) return;
+  setStatus("Deleting...","info");
+  try{
+    const res = await fetch(DELETE_URL,{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({id:item.id,ownerId:item.ownerId||OWNER_ID})});
+    if(res.ok||res.status===204||res.status===200){ setStatus("✅ Deleted","success"); loadGallery(); }
+    else setStatus("Delete failed: "+res.status,"error");
+  }catch(err){ setStatus("Error: "+err.message,"error"); }
+}
 
-  function setStatus(msg, type="info") {
-    const el = document.getElementById("status");
-    el.textContent = msg; el.className = "status show " + type;
-    if (type === "success") setTimeout(() => el.classList.remove("show"), 3000);
-  }
+// ── KEYBOARD & CLICK OUTSIDE ──────────────────────────────────────────────────
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closeLightbox(); closeModal(); }});
+document.getElementById("lightbox").addEventListener("click",function(e){ if(e.target===this) closeLightbox(); });
+document.getElementById("editModal").addEventListener("click",function(e){ if(e.target===this) closeModal(); });
 
-  function updateStats() {
-    document.getElementById("statTotal").textContent = allItems.length;
-    document.getElementById("statImages").textContent = allItems.filter(i => getMediaCategory(i) === "image").length;
-    document.getElementById("statVideos").textContent = allItems.filter(i => getMediaCategory(i) === "video").length;
-    document.getElementById("statAudio").textContent  = allItems.filter(i => getMediaCategory(i) === "audio").length;
-  }
-
-  // ─── VIEWERS ──────────────────────────────────────────────────────────────
-  function viewImage(blobUri, fileName) {
-    document.getElementById("viewerImg").src = encodeUri(blobUri);
-    document.getElementById("viewerName").textContent = fileName;
-    document.getElementById("viewerOverlay").classList.add("active");
-  }
-  function closeViewer() { document.getElementById("viewerOverlay").classList.remove("active"); document.getElementById("viewerImg").src = ""; }
-
-  function playVideo(blobUri, fileName) {
-    const v = document.getElementById("videoPlayer");
-    v.src = encodeUri(blobUri);
-    document.getElementById("videoName").textContent = fileName;
-    document.getElementById("videoModal").classList.add("active");
-    v.play().catch(()=>{});
-  }
-  function closeVideo() { const v = document.getElementById("videoPlayer"); v.pause(); v.src = ""; document.getElementById("videoModal").classList.remove("active"); }
-
-  let currentAudio = null;
-  function toggleAudio(btn, blobUri) {
-    if (currentAudio && !currentAudio.paused) { currentAudio.pause(); currentAudio = null; btn.textContent = "▶"; return; }
-    if (currentAudio) currentAudio.pause();
-    currentAudio = new Audio(encodeUri(blobUri));
-    currentAudio.play().catch(e => alert("Cannot play: " + e.message));
-    btn.textContent = "⏸";
-    currentAudio.onended = () => { btn.textContent = "▶"; currentAudio = null; };
-  }
-
-  // ─── GALLERY RENDER ───────────────────────────────────────────────────────
-  function filterGallery(type, btn) {
-    currentFilter = type;
-    document.querySelectorAll(".filter-tab").forEach(t => t.classList.remove("active"));
-    btn.classList.add("active");
-    renderGallery();
-  }
-
-  function renderGallery() {
-    const items = currentFilter === "all"
-      ? allItems
-      : allItems.filter(i => getMediaCategory(i) === currentFilter); // ← fixed filter
-
-    document.getElementById("itemCount").textContent = items.length + " item" + (items.length !== 1 ? "s" : "");
-    const g = document.getElementById("gallery");
-
-    if (!items.length) {
-      const msg = currentFilter === "all" ? "Upload your first file using the Upload button above" : `No ${currentFilter} files yet — upload some!`;
-      g.innerHTML = `<div class="empty-state"><div class="empty-icon">&#9729;</div><h3>No media yet</h3><p>${msg}</p><button class="btn-empty-upload" onclick="document.getElementById('fileInput').click()">&#8679; Upload Now</button></div>`;
-      return;
-    }
-
-    g.innerHTML = items.map(item => {
-      const cat  = getMediaCategory(item);
-      const id   = ss(item.id), owner = ss(item.ownerId || OWNER_ID), name = ss(item.fileName || "Unknown");
-      const tags = ss(Array.isArray(item.tags) ? item.tags.join(",") : (item.tags || ""));
-      const blob = ss(item.blobUri || ""), type = ss(item.mediaType || cat + "/unknown");
-      const enc  = encodeUri(item.blobUri || "");
-      const ta   = Array.isArray(item.tags) && item.tags.length ? item.tags : (item.tags ? String(item.tags).split(",").map(t=>t.trim()).filter(Boolean) : []);
-      const badge = cat === "image" ? "IMAGE" : cat === "video" ? "VIDEO" : cat === "audio" ? "AUDIO" : "FILE";
-
-      let media = "";
-      if (cat === "image" && item.blobUri) {
-        media = `<div class="card-img-wrap" onclick="viewImage('${blob}','${name}')"><img src="${enc}" alt="${name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\"video-placeholder\\"><span>🖼️</span><p>Preview unavailable</p></div>'"/><div class="img-overlay"><div class="img-overlay-icon">🔍</div></div></div>`;
-      } else if (cat === "video" && item.blobUri) {
-        media = `<div class="card-video-wrap" onclick="playVideo('${blob}','${name}')"><div class="video-placeholder"><span>🎬</span><p>${item.fileName || "Video"}</p></div><div class="play-overlay"><div class="play-circle">▶</div></div></div>`;
-      } else if (cat === "audio" && item.blobUri) {
-        media = `<div class="card-audio"><div class="audio-header"><div class="audio-icon">🎵</div><div class="audio-meta"><div class="audio-title">${item.fileName || "Audio"}</div><div class="audio-sub">Audio File</div></div></div><div class="audio-controls"><button class="audio-btn" onclick="toggleAudio(this,'${blob}')">▶</button><div class="audio-progress"><div class="audio-progress-fill"></div></div></div></div>`;
-      } else {
-        media = `<div class="video-placeholder"><span>📄</span><p>${item.fileName || "File"}</p></div>`;
-      }
-
-      return `<div class="card"><span class="card-type-badge">${badge}</span>${media}<div class="card-body"><div class="card-title">${item.fileName || "Unknown"}</div><div class="card-date">${formatDate(item._ts)}</div>${ta.length ? `<div class="card-tags">${ta.map(t=>`<span class="tag">${t}</span>`).join("")}</div>` : ""}<div class="card-actions"><button class="btn-edit-card" onclick="openEdit('${id}','${owner}','${name}','${tags}','${blob}','${type}')">✏️ Edit</button><button class="btn-delete-card" onclick="deleteItem('${id}','${owner}')">🗑</button></div></div></div>`;
-    }).join("");
-  }
-
-  // ─── LOAD GALLERY ─────────────────────────────────────────────────────────
-  // Fix blobUri for any item where it is missing or only a relative path
-  function fixBlobUri(item) {
-    const base = "https://mediacloudprostorage.blob.core.windows.net/media-uploads/";
-    if (!item.blobUri || item.blobUri === "" || !item.blobUri.startsWith("http")) {
-      // construct from filename
-      item.blobUri = base + encodeURIComponent(item.fileName || "");
-    } else if (item.blobUri.startsWith("https://mediacloudprostorage.blob.core.windows.net/media-uploads/")) {
-      // already correct — do nothing
-    }
-    return item;
-  }
-
-  async function loadGallery() {
-    try {
-      const res  = await fetch(GET_ALL_URL);
-      const data = await res.json();
-      allItems   = (data.Documents || data.value || (Array.isArray(data) ? data : [])).map(fixBlobUri);
-      document.getElementById("status").classList.remove("show");
-      updateStats(); renderGallery();
-    } catch(err) { setStatus("Gallery error: " + err.message, "error"); }
-  }
-
-  // ─── UPLOAD ───────────────────────────────────────────────────────────────
-  async function handleUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    event.target.value = "";
-
-    const mimeType  = detectMimeType(file);
-    const sizeMB    = file.size / 1048576;
-    const prog      = document.getElementById("uploadProgress");
-    const fill      = document.getElementById("upFill");
-    const upSize    = document.getElementById("upSize");
-
-    document.getElementById("upLabel").textContent = "Uploading " + file.name + "...";
-    upSize.textContent = fmtSize(file.size);
-    prog.classList.add("show"); fill.style.width = "15%";
-    setStatus("Uploading " + file.name + " (" + fmtSize(file.size) + ")...", "info");
-
-    try {
-      // ── Strategy A: Large files → direct PUT to Blob Storage ──────────────
-      // This bypasses the Logic App 50 MB body limit for MP4 / MOV / large videos.
-      if (sizeMB > LARGE_FILE_MB && BLOB_SAS_TOKEN) {
-        await uploadDirectToBlob(file, mimeType, fill);
-      } else {
-        // ── Strategy B: Small files → base64 via Logic App (original method) ─
-        await uploadViaLogicApp(file, mimeType, fill);
-      }
-
-      fill.style.width = "100%";
-      setStatus("✅ Uploaded: " + file.name, "success");
-      setTimeout(() => { prog.classList.remove("show"); fill.style.width = "0%"; }, 900);
-      loadGallery();
-
-    } catch(err) {
-      setStatus("Upload error: " + err.message, "error");
-      prog.classList.remove("show");
-    }
-  }
-
-  // Strategy A — direct PUT to Azure Blob Storage (large files / videos)
-  async function uploadDirectToBlob(file, mimeType, fill) {
-    fill.style.width = "40%";
-    const blobName = file.name.replace(/\s+/g, "_"); // no spaces in blob names
-    const blobUrl  = `${BLOB_DIRECT_BASE}/${encodeURIComponent(blobName)}${BLOB_SAS_TOKEN}`;
-
-    // Upload the raw bytes directly to Azure Blob Storage
-    const putRes = await fetch(blobUrl, {
-      method: "PUT",
-      headers: { "x-ms-blob-type": "BlockBlob", "Content-Type": mimeType },
-      body: file
-    });
-    if (!putRes.ok) throw new Error("Blob upload failed: " + putRes.status);
-    fill.style.width = "75%";
-
-    // Save metadata to Cosmos DB via Logic App (tiny payload — no file content)
-    const blobUri = `${BLOB_DIRECT_BASE}/${blobName}`;
-    const metaRes = await fetch(UPLOAD_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fileName: file.name, fileContent: "", mediaType: mimeType, ownerId: OWNER_ID, tags: [], blobUri })
-    });
-    if (!metaRes.ok && metaRes.status !== 201) throw new Error("Metadata save failed: " + metaRes.status);
-  }
-
-  // Strategy B — base64 via Logic App (images, audio, small files)
-  async function uploadViaLogicApp(file, mimeType, fill) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        fill.style.width = "55%";
-        const base64 = e.target.result.split(",")[1];
-        const safeName = file.name.replace(/\s+/g, "%20");
-        const blobUri = `${BLOB_DIRECT_BASE}/${safeName}`;
-        try {
-          const res = await fetch(UPLOAD_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ fileName: file.name, fileContent: base64, mediaType: mimeType, ownerId: OWNER_ID, tags: [], blobUri: blobUri })
-          });
-          if (res.ok || res.status === 201) resolve();
-          else reject(new Error("Upload failed: HTTP " + res.status));
-        } catch(err) { reject(err); }
-      };
-      reader.onerror = () => reject(new Error("File read failed"));
-      reader.readAsDataURL(file);
-    });
-  }
-
-  // ─── EDIT / DELETE ────────────────────────────────────────────────────────
-  function openEdit(id, ownerId, fileName, tags, blobUri, mediaType) {
-    editingId = id; editingOwnerId = ownerId; editingBlobUri = blobUri; editingMediaType = mediaType;
-    document.getElementById("editFileName").value = fileName;
-    document.getElementById("editTags").value = tags;
-    document.getElementById("editModal").classList.add("active");
-  }
-  function closeModal() { document.getElementById("editModal").classList.remove("active"); editingId = null; }
-
-  async function saveEdit() {
-    if (!editingId) return;
-    const fileName = document.getElementById("editFileName").value;
-    const tags = document.getElementById("editTags").value.split(",").map(t => t.trim()).filter(Boolean);
-    setStatus("Updating...", "info");
-    try {
-      const res = await fetch(UPDATE_URL, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: editingId, ownerId: editingOwnerId, fileName, blobUri: editingBlobUri, mediaType: editingMediaType, tags })
-      });
-      if (res.ok || res.status === 200) { setStatus("✅ Updated", "success"); closeModal(); loadGallery(); }
-      else setStatus("Update failed: " + res.status, "error");
-    } catch(err) { setStatus("Error: " + err.message, "error"); }
-  }
-
-  async function deleteItem(id, ownerId) {
-    if (!confirm("Delete this asset? This cannot be undone.")) return;
-    setStatus("Deleting...", "info");
-    try {
-      const res = await fetch(DELETE_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, ownerId })
-      });
-      if (res.ok || res.status === 204 || res.status === 200) { setStatus("✅ Deleted", "success"); loadGallery(); }
-      else setStatus("Delete failed: " + res.status, "error");
-    } catch(err) { setStatus("Error: " + err.message, "error"); }
-  }
-
-  // ─── EVENT LISTENERS ──────────────────────────────────────────────────────
-  document.getElementById("viewerOverlay").addEventListener("click", function(e){ if(e.target===this) closeViewer(); });
-  document.getElementById("videoModal").addEventListener("click", function(e){ if(e.target===this) closeVideo(); });
-  document.getElementById("editModal").addEventListener("click", function(e){ if(e.target===this) closeModal(); });
-  document.addEventListener("keydown", e => { if(e.key==="Escape"){ closeViewer(); closeVideo(); closeModal(); }});
-
-  loadGallery();
+// ── INIT ──────────────────────────────────────────────────────────────────────
+loadGallery();
 </script>
 </body>
 </html>
