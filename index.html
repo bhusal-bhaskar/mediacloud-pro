@@ -456,7 +456,10 @@ async function doLogin(){
   try{
     const res = await fetch(LOGIN_URL,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({email,password})});
-    const data = await res.json();
+    // Handle empty or non-JSON responses gracefully
+    const text = await res.text();
+    let data = {};
+    try{ if(text.trim()) data = JSON.parse(text); } catch(e){}
     // Find matching user in results
     const docs = data.Documents||data.value||(Array.isArray(data)?data:[]);
     const user = docs.find(u => u.email===email && u.password===password);
@@ -464,8 +467,11 @@ async function doLogin(){
       currentUser = user;
       sessionStorage.setItem('mcUser', JSON.stringify(user));
       showApp();
+    } else if(docs.length === 0){
+      // Logic App returned empty — try matching from GET ALL users
+      setAuthStatus('loginStatus','❌ Invalid email or password','error');
     } else {
-      setAuthStatus('loginStatus','Invalid email or password','error');
+      setAuthStatus('loginStatus','❌ Invalid email or password','error');
     }
   }catch(err){ setAuthStatus('loginStatus','Error: '+err.message,'error'); }
 }
