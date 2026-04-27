@@ -565,10 +565,12 @@ function fmtDate(ts){if(!ts)return"";return new Date(ts*1000).toLocaleDateString
 function fmtSize(b){if(b<1048576)return(b/1024).toFixed(1)+" KB";return(b/1048576).toFixed(1)+" MB";}
 function setStatus(msg,type="info"){const el=document.getElementById("status");el.textContent=msg;el.className="status show "+type;if(type==="success")setTimeout(()=>el.classList.remove("show"),3000);}
 function updateStats(){
-  document.getElementById("statTotal").textContent=allItems.length;
-  document.getElementById("statImages").textContent=allItems.filter(i=>categoryOf(i)==="image").length;
-  document.getElementById("statVideos").textContent=allItems.filter(i=>categoryOf(i)==="video").length;
-  document.getElementById("statAudio").textContent=allItems.filter(i=>categoryOf(i)==="audio").length;
+  const ownerId = currentUser?currentUser.id||currentUser.email:"demo-user-001";
+  const mine = allItems.filter(i=>i.ownerId===ownerId||i.ownerId==="demo-user-001");
+  document.getElementById("statTotal").textContent=mine.length;
+  document.getElementById("statImages").textContent=mine.filter(i=>categoryOf(i)==="image").length;
+  document.getElementById("statVideos").textContent=mine.filter(i=>categoryOf(i)==="video").length;
+  document.getElementById("statAudio").textContent=mine.filter(i=>categoryOf(i)==="audio").length;
 }
 
 // ── LIGHTBOX ───────────────────────────────────────────────────────────────────
