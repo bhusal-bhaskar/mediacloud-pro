@@ -8,24 +8,48 @@
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
     body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:#1a1a2e;}
+
+    /* ── AUTH PAGES ── */
+    .auth-page{display:flex;min-height:100vh;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a2e,#2d2d44,#1a2e1a);}
+    .auth-box{background:#fff;border-radius:20px;padding:40px;width:90%;max-width:420px;box-shadow:0 24px 64px rgba(0,0,0,0.3);}
+    .auth-logo{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:28px;}
+    .auth-logo-icon{width:48px;height:48px;background:linear-gradient(135deg,#c8f135,#7ab017);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:900;color:#000;}
+    .auth-logo-text{font-size:1.4rem;font-weight:800;color:#1a1a2e;}
+    .auth-logo-text span{color:#7ab017;}
+    .auth-box h2{font-size:1.3rem;font-weight:800;color:#1a1a2e;margin-bottom:6px;text-align:center;}
+    .auth-box p{font-size:14px;color:#888;text-align:center;margin-bottom:28px;}
+    .auth-field{margin-bottom:16px;}
+    .auth-field label{font-size:12px;font-weight:700;color:#666;display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;}
+    .auth-field input{width:100%;padding:13px 16px;border:2px solid #e8e8e8;border-radius:10px;font-size:14px;outline:none;transition:border 0.2s;font-family:inherit;color:#1a1a2e;background:#f9f9f9;}
+    .auth-field input:focus{border-color:#c8f135;background:#fff;}
+    .auth-btn{width:100%;background:linear-gradient(135deg,#c8f135,#9ec016);color:#000;border:none;padding:14px;border-radius:10px;cursor:pointer;font-weight:700;font-size:15px;margin-top:8px;transition:all 0.2s;}
+    .auth-btn:hover{transform:translateY(-1px);}
+    .auth-switch{text-align:center;margin-top:20px;font-size:14px;color:#888;}
+    .auth-switch a{color:#5a8a00;font-weight:600;cursor:pointer;text-decoration:none;}
+    .auth-switch a:hover{text-decoration:underline;}
+    .auth-status{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none;font-weight:500;}
+    .auth-status.show{display:block;}
+    .auth-status.error{background:#fff0f0;color:#cc3333;border:1px solid #ffcccc;}
+    .auth-status.success{background:#f0f9e0;color:#4a7a00;border:1px solid #c8f135;}
+
+    /* ── MAIN APP ── */
+    #app{display:none;}
     header{background:#fff;padding:0 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e8e8e8;height:68px;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,0.07);}
     .logo{display:flex;align-items:center;gap:12px;}
-    .logo-icon{width:42px;height:42px;background:linear-gradient(135deg,#c8f135,#7ab017);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#000;box-shadow:0 3px 10px rgba(200,241,53,0.45);}
+    .logo-icon{width:42px;height:42px;background:linear-gradient(135deg,#c8f135,#7ab017);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#000;}
     .logo-text{font-size:1.25rem;font-weight:800;color:#1a1a2e;}.logo-text span{color:#7ab017;}
-    nav{display:flex;gap:4px;}
-    nav button{padding:8px 18px;border-radius:8px;font-size:14px;font-weight:500;color:#666;cursor:pointer;border:none;background:none;transition:all 0.2s;}
-    nav button:hover,nav button.active{background:#f0f9e0;color:#5a8a00;}
     .header-right{display:flex;align-items:center;gap:14px;}
     .user-badge{display:flex;align-items:center;gap:8px;background:#f5f6fa;padding:6px 14px 6px 8px;border-radius:24px;font-size:13px;color:#444;font-weight:500;}
     .avatar{width:30px;height:30px;background:linear-gradient(135deg,#c8f135,#7ab017);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#000;}
-    .btn-upload-header{background:linear-gradient(135deg,#c8f135,#9ec016);color:#000;border:none;padding:10px 24px;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;transition:all 0.2s;box-shadow:0 3px 10px rgba(200,241,53,0.4);}
-    .btn-upload-header:hover{transform:translateY(-2px);}
+    .btn-upload-header{background:linear-gradient(135deg,#c8f135,#9ec016);color:#000;border:none;padding:10px 20px;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;transition:all 0.2s;}
+    .btn-logout{background:#f5f6fa;color:#666;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:600;font-size:13px;transition:all 0.2s;}
+    .btn-logout:hover{background:#ffe0e0;color:#cc3333;}
     .hero{background:linear-gradient(135deg,#1a1a2e,#2d2d44,#1a2e1a);padding:48px 40px;color:#fff;position:relative;overflow:hidden;}
     .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(200,241,53,0.12),transparent 60%);}
     .hero-content{max-width:1200px;margin:0 auto;position:relative;}
     .hero h1{font-size:2rem;font-weight:800;margin-bottom:8px;}.hero h1 span{color:#c8f135;}
     .hero p{color:#aaa;font-size:15px;margin-bottom:28px;max-width:500px;}
-    .hero-upload{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#c8f135,#9ec016);color:#000;padding:14px 32px;border-radius:12px;border:none;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 16px rgba(200,241,53,0.4);}
+    .hero-upload{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#c8f135,#9ec016);color:#000;padding:14px 32px;border-radius:12px;border:none;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s;}
     .hero-upload:hover{transform:translateY(-2px);}
     .hero-stats{display:flex;gap:32px;margin-top:32px;}
     .hero-stat{display:flex;flex-direction:column;}
@@ -77,7 +101,6 @@
     .empty-state h3{font-size:1.3rem;color:#333;margin-bottom:8px;font-weight:700;}
     .empty-state p{font-size:14px;color:#999;margin-bottom:24px;}
     .btn-empty-upload{background:linear-gradient(135deg,#c8f135,#9ec016);color:#000;border:none;padding:12px 28px;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;}
-    /* MODAL */
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(6px);justify-content:center;align-items:center;z-index:1000;}
     .modal-overlay.active{display:flex;}
     .modal{background:#fff;border-radius:20px;padding:32px;width:90%;max-width:460px;box-shadow:0 24px 64px rgba(0,0,0,0.2);}
@@ -90,14 +113,12 @@
     .modal-actions{display:flex;gap:10px;margin-top:8px;}
     .btn-save-modal{flex:1;background:linear-gradient(135deg,#c8f135,#9ec016);color:#000;border:none;padding:13px;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;}
     .btn-cancel-modal{background:#f5f6fa;color:#666;border:none;padding:13px 20px;border-radius:10px;cursor:pointer;font-weight:600;font-size:14px;}
-    /* LIGHTBOX */
     .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:5000;flex-direction:column;align-items:center;justify-content:center;}
     .lightbox.active{display:flex;}
-    .lightbox img{width:auto;height:auto;max-width:90vw;max-height:85vh;border-radius:10px;object-fit:contain;display:block;min-width:200px;}
-    .lightbox video{width:auto;height:auto;max-width:90vw;max-height:85vh;border-radius:10px;outline:none;}
+    .lightbox img{max-width:92vw;max-height:85vh;border-radius:10px;object-fit:contain;display:block;}
+    .lightbox video{max-width:92vw;max-height:85vh;border-radius:10px;outline:none;}
     .lightbox-close{position:fixed;top:18px;right:22px;background:rgba(255,255,255,0.15);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5001;}
     .lightbox-name{color:rgba(255,255,255,0.55);font-size:13px;margin-top:14px;max-width:80vw;text-align:center;word-break:break-all;}
-    /* UPLOAD PROGRESS */
     .upload-toast{position:fixed;bottom:24px;right:24px;background:#1a1a2e;color:#fff;padding:16px 20px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.3);display:none;z-index:500;min-width:260px;}
     .upload-toast.show{display:block;}
     .up-label{font-size:13px;font-weight:600;margin-bottom:8px;}
@@ -109,57 +130,107 @@
 </head>
 <body>
 
-<header>
-  <div class="logo">
-    <div class="logo-icon">MC</div>
-    <span class="logo-text">MediaCloud <span>Pro</span></span>
-  </div>
-  <nav>
-    <button class="active">Home</button>
-    <button onclick="document.getElementById('fileInput').click()">Upload</button>
-  </nav>
-  <div class="header-right">
-    <div class="user-badge">
-      <div class="avatar">B</div>
-      <span>Bhaskar Bhusal</span>
+<!-- ── LOGIN PAGE ── -->
+<div id="loginPage" class="auth-page">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">MC</div>
+      <span class="auth-logo-text">MediaCloud <span>Pro</span></span>
     </div>
-    <button class="btn-upload-header" onclick="document.getElementById('fileInput').click()">&#8679; Upload</button>
-  </div>
-</header>
-
-<input type="file" id="fileInput" style="display:none"
-  accept="image/*,video/*,audio/*,.mp4,.mov,.avi,.mkv,.mp3,.wav,.aac,.m4a"
-  onchange="handleUpload(event)"/>
-
-<div class="hero">
-  <div class="hero-content">
-    <h1>Your <span>Cloud Media</span> Gallery</h1>
-    <p>Upload, manage and share images, videos and audio — powered by Microsoft Azure Blob Storage and Cosmos DB.</p>
-    <button class="hero-upload" onclick="document.getElementById('fileInput').click()">&#8679; Upload Media</button>
-    <div class="hero-stats">
-      <div class="hero-stat"><span class="num" id="statTotal">0</span><span class="label">Total Files</span></div>
-      <div class="hero-stat"><span class="num" id="statImages">0</span><span class="label">Images</span></div>
-      <div class="hero-stat"><span class="num" id="statVideos">0</span><span class="label">Videos</span></div>
-      <div class="hero-stat"><span class="num" id="statAudio">0</span><span class="label">Audio</span></div>
+    <h2>Welcome back</h2>
+    <p>Sign in to access your media gallery</p>
+    <div class="auth-status" id="loginStatus"></div>
+    <div class="auth-field">
+      <label>Email</label>
+      <input type="email" id="loginEmail" placeholder="you@example.com"/>
     </div>
+    <div class="auth-field">
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="Enter your password"/>
+    </div>
+    <button class="auth-btn" onclick="doLogin()">Sign In</button>
+    <div class="auth-switch">Don't have an account? <a onclick="showRegister()">Register here</a></div>
   </div>
 </div>
 
-<main>
-  <div class="status" id="status"></div>
-  <div class="toolbar">
-    <div class="filter-tabs">
-      <button class="filter-tab active" onclick="filterGallery('all',this)">All</button>
-      <button class="filter-tab" onclick="filterGallery('image',this)">🖼 Images</button>
-      <button class="filter-tab" onclick="filterGallery('video',this)">🎬 Videos</button>
-      <button class="filter-tab" onclick="filterGallery('audio',this)">🎵 Audio</button>
+<!-- ── REGISTER PAGE ── -->
+<div id="registerPage" class="auth-page" style="display:none;">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">MC</div>
+      <span class="auth-logo-text">MediaCloud <span>Pro</span></span>
     </div>
-    <span class="item-count" id="itemCount"></span>
+    <h2>Create account</h2>
+    <p>Join MediaCloud Pro today</p>
+    <div class="auth-status" id="registerStatus"></div>
+    <div class="auth-field">
+      <label>Full Name</label>
+      <input type="text" id="registerName" placeholder="Bhaskar Bhusal"/>
+    </div>
+    <div class="auth-field">
+      <label>Email</label>
+      <input type="email" id="registerEmail" placeholder="you@example.com"/>
+    </div>
+    <div class="auth-field">
+      <label>Password</label>
+      <input type="password" id="registerPassword" placeholder="Choose a password"/>
+    </div>
+    <button class="auth-btn" onclick="doRegister()">Create Account</button>
+    <div class="auth-switch">Already have an account? <a onclick="showLogin()">Sign in</a></div>
   </div>
-  <div class="gallery" id="gallery">
-    <div class="empty-state"><div class="empty-icon">&#9729;</div><h3>Loading...</h3><p>Connecting to Azure...</p></div>
+</div>
+
+<!-- ── MAIN APP ── -->
+<div id="app">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">MC</div>
+      <span class="logo-text">MediaCloud <span>Pro</span></span>
+    </div>
+    <div class="header-right">
+      <div class="user-badge">
+        <div class="avatar" id="avatarLetter">B</div>
+        <span id="userNameDisplay">User</span>
+      </div>
+      <button class="btn-upload-header" onclick="document.getElementById('fileInput').click()">&#8679; Upload</button>
+      <button class="btn-logout" onclick="doLogout()">Sign Out</button>
+    </div>
+  </header>
+
+  <input type="file" id="fileInput" style="display:none"
+    accept="image/*,video/*,audio/*,.mp4,.mov,.avi,.mkv,.mp3,.wav,.aac,.m4a"
+    onchange="handleUpload(event)"/>
+
+  <div class="hero">
+    <div class="hero-content">
+      <h1>Your <span>Cloud Media</span> Gallery</h1>
+      <p>Upload, manage and share images, videos and audio — powered by Microsoft Azure.</p>
+      <button class="hero-upload" onclick="document.getElementById('fileInput').click()">&#8679; Upload Media</button>
+      <div class="hero-stats">
+        <div class="hero-stat"><span class="num" id="statTotal">0</span><span class="label">Total Files</span></div>
+        <div class="hero-stat"><span class="num" id="statImages">0</span><span class="label">Images</span></div>
+        <div class="hero-stat"><span class="num" id="statVideos">0</span><span class="label">Videos</span></div>
+        <div class="hero-stat"><span class="num" id="statAudio">0</span><span class="label">Audio</span></div>
+      </div>
+    </div>
   </div>
-</main>
+
+  <main>
+    <div class="status" id="status"></div>
+    <div class="toolbar">
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="filterGallery('all',this)">All</button>
+        <button class="filter-tab" onclick="filterGallery('image',this)">🖼 Images</button>
+        <button class="filter-tab" onclick="filterGallery('video',this)">🎬 Videos</button>
+        <button class="filter-tab" onclick="filterGallery('audio',this)">🎵 Audio</button>
+      </div>
+      <span class="item-count" id="itemCount"></span>
+    </div>
+    <div class="gallery" id="gallery">
+      <div class="empty-state"><div class="empty-icon">&#9729;</div><h3>Loading...</h3></div>
+    </div>
+  </main>
+</div>
 
 <!-- EDIT MODAL -->
 <div class="modal-overlay" id="editModal">
@@ -179,7 +250,7 @@
   </div>
 </div>
 
-<!-- IMAGE / VIDEO LIGHTBOX -->
+<!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
   <button class="lightbox-close" onclick="closeLightbox()">✕</button>
   <img id="lbImg" src="" alt="" style="display:none"/>
@@ -196,28 +267,102 @@
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────────
-const UPLOAD_URL  = "https://prod-05.spaincentral.logic.azure.com:443/workflows/f9514801f7d24174b297c3a28c35a585/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=i_cxwvSIOe7UkJQXKUZrEs8qABLTMh4c4FfJYNg2vm0";
-const GET_ALL_URL = "https://prod-28.spaincentral.logic.azure.com:443/workflows/a5f92eec70bb412f896a01c37d026b44/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=QzHf1fdnQgW6Sy88xOckIW9zQLJ-qRU33P9nbLoO_vU";
-const UPDATE_URL  = "https://prod-05.spaincentral.logic.azure.com:443/workflows/ff17882f7bee4ac381f99bc797454134/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=r3lwZCuyOoikhcJestDNPq41jdK1quNxhbo6Wfg2s40";
-const DELETE_URL  = "https://prod-03.spaincentral.logic.azure.com:443/workflows/064716e1a4744a5eba74506baa2b81d8/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=SDbC5bg89eFU2Qu87lUdgThGQZsfnjMGnyoY5FE3L_Q";
+const UPLOAD_URL    = "https://prod-05.spaincentral.logic.azure.com:443/workflows/f9514801f7d24174b297c3a28c35a585/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=i_cxwvSIOe7UkJQXKUZrEs8qABLTMh4c4FfJYNg2vm0";
+const GET_ALL_URL   = "https://prod-28.spaincentral.logic.azure.com:443/workflows/a5f92eec70bb412f896a01c37d026b44/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=QzHf1fdnQgW6Sy88xOckIW9zQLJ-qRU33P9nbLoO_vU";
+const UPDATE_URL    = "https://prod-05.spaincentral.logic.azure.com:443/workflows/ff17882f7bee4ac381f99bc797454134/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=r3lwZCuyOoikhcJestDNPq41jdK1quNxhbo6Wfg2s40";
+const DELETE_URL    = "https://prod-03.spaincentral.logic.azure.com:443/workflows/064716e1a4744a5eba74506baa2b81d8/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=SDbC5bg89eFU2Qu87lUdgThGQZsfnjMGnyoY5FE3L_Q";
+const REGISTER_URL  = "https://prod-04.spaincentral.logic.azure.com:443/workflows/42ebe20935114485b118a43ab4c879e6/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=GFnCjHOz-evIvstfRQpx8jJa_m0KdZap8kSPkDSNr48";
+const LOGIN_URL     = "https://prod-14.spaincentral.logic.azure.com:443/workflows/cfb5ecf44c6345cdb9f654d6d9dc1339/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=_9_rS2xDEugDR8AJKC3zdjUX4OLA5VaRo-KrwkyEegc";
 
-const BLOB_BASE    = "https://mediacloudprostorage.blob.core.windows.net/media-uploads";
-const BLOB_SAS     = "?sv=2025-11-05&ss=bfqt&srt=o&sp=rwdlacupiytfx&se=2027-04-23T18:02:12Z&st=2026-04-23T09:47:12Z&spr=https&sig=yyLhFmWuVHNXsYJaByT9Ypu7du9TjYRSf6e%2BUILYC2k%3D";
-const LARGE_MB     = 10;
-const OWNER_ID     = "demo-user-001";
+const BLOB_BASE = "https://mediacloudprostorage.blob.core.windows.net/media-uploads";
+const BLOB_SAS  = "?sv=2025-11-05&ss=bfqt&srt=o&sp=rwdlacupiytfx&se=2027-04-23T18:02:12Z&st=2026-04-23T09:47:12Z&spr=https&sig=yyLhFmWuVHNXsYJaByT9Ypu7du9TjYRSf6e%2BUILYC2k%3D";
+const LARGE_MB  = 10;
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let allItems = [], currentFilter = "all";
 let editId = null, editOwnerId = null, editBlobUri = null, editMediaType = null;
 let currentAudioEl = null, currentAudioBtn = null;
+let currentUser = null; // logged in user object
 
-// ── MEDIA TYPE HELPERS ────────────────────────────────────────────────────────
-const IMG_EXT  = ["jpg","jpeg","png","gif","webp","bmp","svg","heic","heif","avif","tiff"];
-const VID_EXT  = ["mp4","mov","avi","mkv","webm","m4v","wmv","flv","3gp","ogv"];
-const AUD_EXT  = ["mp3","wav","aac","ogg","flac","m4a","opus","wma","aiff"];
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+function showLogin(){ document.getElementById('loginPage').style.display='flex'; document.getElementById('registerPage').style.display='none'; }
+function showRegister(){ document.getElementById('registerPage').style.display='flex'; document.getElementById('loginPage').style.display='none'; }
+
+function setAuthStatus(id, msg, type){
+  const el = document.getElementById(id);
+  el.textContent = msg; el.className = 'auth-status show ' + type;
+}
+
+async function doRegister(){
+  const name = document.getElementById('registerName').value.trim();
+  const email = document.getElementById('registerEmail').value.trim();
+  const password = document.getElementById('registerPassword').value;
+  if(!name||!email||!password){ setAuthStatus('registerStatus','Please fill in all fields','error'); return; }
+  setAuthStatus('registerStatus','Creating account...','');
+  try{
+    const res = await fetch(REGISTER_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,email,password})});
+    if(res.ok||res.status===201||res.status===200){
+      setAuthStatus('registerStatus','✅ Account created! Please sign in.','success');
+      setTimeout(()=>showLogin(), 1500);
+    } else {
+      setAuthStatus('registerStatus','Registration failed. Try again.','error');
+    }
+  }catch(err){ setAuthStatus('registerStatus','Error: '+err.message,'error'); }
+}
+
+async function doLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if(!email||!password){ setAuthStatus('loginStatus','Please enter email and password','error'); return; }
+  setAuthStatus('loginStatus','Signing in...','');
+  try{
+    const res = await fetch(LOGIN_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email,password})});
+    const data = await res.json();
+    // Find matching user in results
+    const docs = data.Documents||data.value||(Array.isArray(data)?data:[]);
+    const user = docs.find(u => u.email===email && u.password===password);
+    if(user){
+      currentUser = user;
+      sessionStorage.setItem('mcUser', JSON.stringify(user));
+      showApp();
+    } else {
+      setAuthStatus('loginStatus','Invalid email or password','error');
+    }
+  }catch(err){ setAuthStatus('loginStatus','Error: '+err.message,'error'); }
+}
+
+function doLogout(){
+  currentUser = null;
+  sessionStorage.removeItem('mcUser');
+  document.getElementById('app').style.display='none';
+  showLogin();
+}
+
+function showApp(){
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('registerPage').style.display='none';
+  document.getElementById('app').style.display='block';
+  // Set user display
+  const name = currentUser.name||currentUser.email||'User';
+  document.getElementById('userNameDisplay').textContent = name;
+  document.getElementById('avatarLetter').textContent = name.charAt(0).toUpperCase();
+  loadGallery();
+}
+
+// Check if already logged in
+window.addEventListener('load', ()=>{
+  const saved = sessionStorage.getItem('mcUser');
+  if(saved){ currentUser = JSON.parse(saved); showApp(); }
+});
+
+// ── MEDIA TYPE HELPERS ─────────────────────────────────────────────────────────
+const IMG_EXT = ["jpg","jpeg","png","gif","webp","bmp","svg","heic","heif","avif","tiff"];
+const VID_EXT = ["mp4","mov","avi","mkv","webm","m4v","wmv","flv","3gp","ogv"];
+const AUD_EXT = ["mp3","wav","aac","ogg","flac","m4a","opus","wma","aiff"];
 
 function extOf(name){ return (name||"").split(".").pop().toLowerCase(); }
-
 function categoryOf(item){
   const mt = (item.mediaType||"").toLowerCase();
   if(mt.startsWith("image/")) return "image";
@@ -229,58 +374,32 @@ function categoryOf(item){
   if(AUD_EXT.includes(ext)) return "audio";
   return "file";
 }
-
 function mimeOf(file){
   if(file.type) return file.type;
-  const m = {mp4:"video/mp4",mov:"video/quicktime",avi:"video/x-msvideo",mkv:"video/x-matroska",
-    webm:"video/webm",m4v:"video/mp4",mp3:"audio/mpeg",wav:"audio/wav",aac:"audio/aac",
-    m4a:"audio/mp4",ogg:"audio/ogg",flac:"audio/flac",jpg:"image/jpeg",jpeg:"image/jpeg",
-    png:"image/png",gif:"image/gif",webp:"image/webp",svg:"image/svg+xml"};
+  const m={mp4:"video/mp4",mov:"video/quicktime",avi:"video/x-msvideo",mkv:"video/x-matroska",webm:"video/webm",m4v:"video/mp4",mp3:"audio/mpeg",wav:"audio/wav",aac:"audio/aac",m4a:"audio/mp4",ogg:"audio/ogg",flac:"audio/flac",jpg:"image/jpeg",jpeg:"image/jpeg",png:"image/png",gif:"image/gif",webp:"image/webp",svg:"image/svg+xml"};
   return m[extOf(file.name)]||"application/octet-stream";
 }
 
-// ── BLOB URI HELPERS ──────────────────────────────────────────────────────────
-// Build the correct public blob URL from filename
-function buildBlobUri(fileName){
-  // encode each path segment but keep slashes
-  return BLOB_BASE + "/" + fileName.split("/").map(encodeURIComponent).join("/");
-}
-
-// Get the URL to actually load the media (adds SAS token for streaming)
+// ── BLOB HELPERS ───────────────────────────────────────────────────────────────
+function buildBlobUri(fileName){ return BLOB_BASE+"/"+fileName.split("/").map(encodeURIComponent).join("/"); }
 function mediaUrl(blobUri){
   if(!blobUri) return "";
-  // If it already has a SAS token, return as-is
   if(blobUri.includes("?sv=")) return blobUri;
-  // Add SAS token for blob storage URLs
   if(blobUri.includes("blob.core.windows.net")){
-    // Make sure the path segments are encoded
-    try{
-      const u = new URL(blobUri);
-      u.pathname = u.pathname.split("/").map(p=>encodeURIComponent(decodeURIComponent(p))).join("/");
-      return u.toString() + BLOB_SAS;
-    }catch(e){ return blobUri + BLOB_SAS; }
+    try{const u=new URL(blobUri);u.pathname=u.pathname.split("/").map(p=>encodeURIComponent(decodeURIComponent(p))).join("/");return u.toString()+BLOB_SAS;}
+    catch(e){return blobUri+BLOB_SAS;}
   }
   return blobUri;
 }
-
-// Fix blobUri for items where it is missing or relative
 function fixItem(item){
-  if(!item.blobUri || !item.blobUri.startsWith("http")){
-    item.blobUri = buildBlobUri(item.fileName||"");
-  }
+  if(!item.blobUri||!item.blobUri.startsWith("http")) item.blobUri=buildBlobUri(item.fileName||"");
   return item;
 }
 
-// ── UTILS ─────────────────────────────────────────────────────────────────────
-function fmtDate(ts){ if(!ts)return""; return new Date(ts*1000).toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"}); }
-function fmtSize(b){ if(b<1048576)return(b/1024).toFixed(1)+" KB"; return(b/1048576).toFixed(1)+" MB"; }
-
-function setStatus(msg,type="info"){
-  const el=document.getElementById("status");
-  el.textContent=msg; el.className="status show "+type;
-  if(type==="success") setTimeout(()=>el.classList.remove("show"),3000);
-}
-
+// ── UTILS ──────────────────────────────────────────────────────────────────────
+function fmtDate(ts){if(!ts)return"";return new Date(ts*1000).toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});}
+function fmtSize(b){if(b<1048576)return(b/1024).toFixed(1)+" KB";return(b/1048576).toFixed(1)+" MB";}
+function setStatus(msg,type="info"){const el=document.getElementById("status");el.textContent=msg;el.className="status show "+type;if(type==="success")setTimeout(()=>el.classList.remove("show"),3000);}
 function updateStats(){
   document.getElementById("statTotal").textContent=allItems.length;
   document.getElementById("statImages").textContent=allItems.filter(i=>categoryOf(i)==="image").length;
@@ -288,273 +407,178 @@ function updateStats(){
   document.getElementById("statAudio").textContent=allItems.filter(i=>categoryOf(i)==="audio").length;
 }
 
-// ── LIGHTBOX ──────────────────────────────────────────────────────────────────
+// ── LIGHTBOX ───────────────────────────────────────────────────────────────────
 function openImage(idx){
-  const item = allItems[idx];
-  if(!item) return;
-  const url = mediaUrl(item.blobUri);
-  const lb = document.getElementById("lightbox");
-  const img = document.getElementById("lbImg");
-  const vid = document.getElementById("lbVideo");
-  // Stop any playing video first
-  vid.pause(); vid.src=""; vid.style.display="none";
-  // Reset image then set src
-  img.src="";
-  img.style.display="block";
-
-  document.getElementById("lbName").textContent = item.fileName||"";
+  const item=allItems[idx];if(!item)return;
+  const lb=document.getElementById("lightbox"),img=document.getElementById("lbImg"),vid=document.getElementById("lbVideo");
+  vid.pause();vid.src="";vid.style.display="none";
+  img.src="";img.style.display="block";
+  document.getElementById("lbName").textContent=item.fileName||"";
   lb.classList.add("active");
-  // Set src AFTER lightbox is visible so browser renders it
-  setTimeout(()=>{ img.src = url; }, 50);
+  setTimeout(()=>{img.src=mediaUrl(item.blobUri);},50);
 }
-
 function openVideo(idx){
-  const item = allItems[idx];
-  if(!item) return;
-  const url = mediaUrl(item.blobUri);
-  const lb = document.getElementById("lightbox");
-  const img = document.getElementById("lbImg");
-  const vid = document.getElementById("lbVideo");
-  img.style.display="none"; vid.style.display="block";
-  img.src="";
-  vid.src = url;
-  document.getElementById("lbName").textContent = item.fileName||"";
-  lb.classList.add("active");
-  vid.play().catch(()=>{});
+  const item=allItems[idx];if(!item)return;
+  const lb=document.getElementById("lightbox"),img=document.getElementById("lbImg"),vid=document.getElementById("lbVideo");
+  img.src="";img.style.display="none";vid.style.display="block";
+  vid.src=mediaUrl(item.blobUri);
+  document.getElementById("lbName").textContent=item.fileName||"";
+  lb.classList.add("active");vid.play().catch(()=>{});
+}
+function closeLightbox(){const lb=document.getElementById("lightbox"),vid=document.getElementById("lbVideo");vid.pause();vid.src="";document.getElementById("lbImg").src="";lb.classList.remove("active");}
+
+// ── AUDIO ──────────────────────────────────────────────────────────────────────
+function toggleAudio(btn,idx){
+  const item=allItems[idx];if(!item)return;
+  if(currentAudioEl){currentAudioEl.pause();currentAudioEl.src="";if(currentAudioBtn)currentAudioBtn.textContent="▶";if(currentAudioBtn===btn){currentAudioEl=null;currentAudioBtn=null;return;}}
+  currentAudioEl=new Audio(mediaUrl(item.blobUri));currentAudioBtn=btn;btn.textContent="⏸";
+  currentAudioEl.play().catch(e=>{setStatus("Cannot play audio: "+e.message,"error");btn.textContent="▶";});
+  currentAudioEl.onended=()=>{btn.textContent="▶";currentAudioEl=null;currentAudioBtn=null;};
 }
 
-function closeLightbox(){
-  const lb=document.getElementById("lightbox");
-  const vid=document.getElementById("lbVideo");
-  vid.pause(); vid.src="";
-  document.getElementById("lbImg").src="";
-  lb.classList.remove("active");
-}
-
-// ── AUDIO ─────────────────────────────────────────────────────────────────────
-function toggleAudio(btn, idx){
-  const item = allItems[idx];
-  if(!item) return;
-  // Stop previous audio
-  if(currentAudioEl){
-    currentAudioEl.pause();
-    currentAudioEl.src="";
-    if(currentAudioBtn) currentAudioBtn.textContent="▶";
-    if(currentAudioBtn===btn){ currentAudioEl=null; currentAudioBtn=null; return; }
-  }
-  const url = mediaUrl(item.blobUri);
-  currentAudioEl = new Audio(url);
-  currentAudioBtn = btn;
-  btn.textContent="⏸";
-  currentAudioEl.play().catch(e=>{ setStatus("Cannot play audio: "+e.message,"error"); btn.textContent="▶"; });
-  currentAudioEl.onended=()=>{ btn.textContent="▶"; currentAudioEl=null; currentAudioBtn=null; };
-  currentAudioEl.onerror=()=>{ setStatus("Audio load failed","error"); btn.textContent="▶"; currentAudioEl=null; currentAudioBtn=null; };
-}
-
-// ── GALLERY ───────────────────────────────────────────────────────────────────
-function filterGallery(type,btn){
-  currentFilter=type;
-  document.querySelectorAll(".filter-tab").forEach(t=>t.classList.remove("active"));
-  btn.classList.add("active");
-  renderGallery();
-}
+// ── GALLERY ────────────────────────────────────────────────────────────────────
+function filterGallery(type,btn){currentFilter=type;document.querySelectorAll(".filter-tab").forEach(t=>t.classList.remove("active"));btn.classList.add("active");renderGallery();}
 
 function renderGallery(){
-  const items = currentFilter==="all" ? allItems : allItems.filter(i=>categoryOf(i)===currentFilter);
-  document.getElementById("itemCount").textContent = items.length+" item"+(items.length!==1?"s":"");
-  const g = document.getElementById("gallery");
-
+  const ownerId = currentUser?currentUser.id||currentUser.email:"demo-user-001";
+  // Show only current user's files
+  const mine = allItems.filter(i=>(i.ownerId===ownerId||i.ownerId==="demo-user-001"));
+  const items = currentFilter==="all"?mine:mine.filter(i=>categoryOf(i)===currentFilter);
+  document.getElementById("itemCount").textContent=items.length+" item"+(items.length!==1?"s":"");
+  const g=document.getElementById("gallery");
   if(!items.length){
     g.innerHTML=`<div class="empty-state"><div class="empty-icon">&#9729;</div><h3>No media yet</h3><p>Upload your first file!</p><button class="btn-empty-upload" onclick="document.getElementById('fileInput').click()">&#8679; Upload Now</button></div>`;
     return;
   }
-
-  // We use data-idx to safely reference items — no string escaping issues with special chars
-  g.innerHTML = items.map((item, i) => {
-    // Find the real index in allItems
-    const idx = allItems.indexOf(item);
-    const cat = categoryOf(item);
-    const badge = cat==="image"?"IMAGE":cat==="video"?"VIDEO":cat==="audio"?"AUDIO":"FILE";
-    const url = mediaUrl(item.blobUri);
-    const dateStr = fmtDate(item._ts);
-    const tagsArr = Array.isArray(item.tags) ? item.tags : (item.tags?String(item.tags).split(",").map(t=>t.trim()).filter(t=>t&&t!=="[]"):[]);
-    const tagsHtml = tagsArr.length ? `<div class="card-tags">${tagsArr.map(t=>`<span class="tag">${escHtml(t)}</span>`).join("")}</div>` : "";
-
-    let mediaHtml = "";
-    if(cat==="image"){
-      mediaHtml = `<div class="card-media" onclick="openImage(${idx})">
-        <img src="${url}" alt="${escHtml(item.fileName||'')}" loading="lazy"
-          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-        <div class="media-overlay" style="display:none;flex-direction:column;gap:8px;">
-          <span style="font-size:2.5rem">🖼️</span>
-          <span class="media-label">${escHtml(item.fileName||'')}</span>
-        </div>
-        <div class="media-overlay"><div class="media-icon">🔍</div></div>
-      </div>`;
-    } else if(cat==="video"){
-      mediaHtml = `<div class="card-media" onclick="openVideo(${idx})">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-          <div class="play-circle">▶</div>
-          <span class="media-label">${escHtml(item.fileName||'Video')}</span>
-        </div>
-      </div>`;
-    } else if(cat==="audio"){
-      mediaHtml = `<div class="card-audio-wrap">
-        <div class="audio-icon-big">🎵</div>
-        <div class="audio-title-sm">${escHtml(item.fileName||'Audio')}</div>
-        <button class="audio-btn-big" onclick="toggleAudio(this,${idx})">▶</button>
-      </div>`;
-    } else {
-      mediaHtml = `<div class="card-media" style="cursor:default;">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-          <span style="font-size:3rem">📄</span>
-          <span class="media-label">${escHtml(item.fileName||'File')}</span>
-        </div>
-      </div>`;
+  g.innerHTML=items.map(item=>{
+    const idx=allItems.indexOf(item);
+    const cat=categoryOf(item);
+    const badge=cat==="image"?"IMAGE":cat==="video"?"VIDEO":cat==="audio"?"AUDIO":"FILE";
+    const url=mediaUrl(item.blobUri);
+    const dateStr=fmtDate(item._ts);
+    const tagsArr=Array.isArray(item.tags)?item.tags:(item.tags?String(item.tags).split(",").map(t=>t.trim()).filter(t=>t&&t!=="[]"):[]);
+    const tagsHtml=tagsArr.length?`<div class="card-tags">${tagsArr.map(t=>`<span class="tag">${escHtml(t)}</span>`).join("")}</div>`:"";
+    let mediaHtml="";
+    if(cat==="image"&&item.blobUri){
+      mediaHtml=`<div class="card-media" onclick="openImage(${idx})"><img src="${url}" alt="${escHtml(item.fileName||'')}" loading="lazy" onerror="this.style.display='none'"/><div class="media-overlay"><div class="media-icon">🔍</div></div></div>`;
+    }else if(cat==="video"&&item.blobUri){
+      mediaHtml=`<div class="card-media" onclick="openVideo(${idx})"><div style="display:flex;flex-direction:column;align-items:center;gap:8px;"><div class="play-circle">▶</div><span class="media-label">${escHtml(item.fileName||'Video')}</span></div></div>`;
+    }else if(cat==="audio"&&item.blobUri){
+      mediaHtml=`<div class="card-audio-wrap"><div class="audio-icon-big">🎵</div><div class="audio-title-sm">${escHtml(item.fileName||'Audio')}</div><button class="audio-btn-big" onclick="toggleAudio(this,${idx})">▶</button></div>`;
+    }else{
+      mediaHtml=`<div class="card-media" style="cursor:default;"><span style="font-size:3rem">📄</span></div>`;
     }
-
-    return `<div class="card">
-      <span class="card-type-badge">${badge}</span>
-      ${mediaHtml}
-      <div class="card-body">
-        <div class="card-title">${escHtml(item.fileName||'Unknown')}</div>
-        <div class="card-date">${dateStr}</div>
-        ${tagsHtml}
-        <div class="card-actions">
-          <button class="btn-edit-card" onclick="openEdit(${idx})">✏️ Edit</button>
-          <button class="btn-delete-card" onclick="deleteItem(${idx})">🗑</button>
-        </div>
-      </div>
-    </div>`;
+    return `<div class="card"><span class="card-type-badge">${badge}</span>${mediaHtml}<div class="card-body"><div class="card-title">${escHtml(item.fileName||'Unknown')}</div><div class="card-date">${dateStr}</div>${tagsHtml}<div class="card-actions"><button class="btn-edit-card" onclick="openEdit(${idx})">✏️ Edit</button><button class="btn-delete-card" onclick="deleteItem(${idx})">🗑</button></div></div></div>`;
   }).join("");
 }
 
-// Safe HTML escape — used only for display text, NOT for onclick attributes
-function escHtml(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function escHtml(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 
-// ── LOAD ──────────────────────────────────────────────────────────────────────
+// ── LOAD ───────────────────────────────────────────────────────────────────────
 async function loadGallery(){
   try{
-    const res = await fetch(GET_ALL_URL);
-    const data = await res.json();
-    allItems = (data.Documents||data.value||(Array.isArray(data)?data:[])).map(fixItem);
+    const res=await fetch(GET_ALL_URL);
+    const data=await res.json();
+    allItems=(data.Documents||data.value||(Array.isArray(data)?data:[])).map(fixItem);
     document.getElementById("status").classList.remove("show");
-    updateStats(); renderGallery();
-  }catch(err){ setStatus("Gallery error: "+err.message,"error"); }
+    updateStats();renderGallery();
+  }catch(err){setStatus("Gallery error: "+err.message,"error");}
 }
 
-// ── UPLOAD ────────────────────────────────────────────────────────────────────
+// ── UPLOAD ─────────────────────────────────────────────────────────────────────
 async function handleUpload(event){
-  const file = event.target.files[0];
-  if(!file) return;
+  const file=event.target.files[0];if(!file)return;
   event.target.value="";
-
-  const mime = mimeOf(file);
-  const sizeMB = file.size/1048576;
-  const toast = document.getElementById("uploadToast");
-  const fill = document.getElementById("upFill");
-  document.getElementById("upLabel").textContent = "Uploading "+file.name+"...";
-  document.getElementById("upSize").textContent = fmtSize(file.size);
-  toast.classList.add("show"); fill.style.width="15%";
+  const mime=mimeOf(file),sizeMB=file.size/1048576;
+  const toast=document.getElementById("uploadToast"),fill=document.getElementById("upFill");
+  document.getElementById("upLabel").textContent="Uploading "+file.name+"...";
+  document.getElementById("upSize").textContent=fmtSize(file.size);
+  toast.classList.add("show");fill.style.width="15%";
   setStatus("Uploading "+file.name+"...","info");
-
+  const ownerId=currentUser?currentUser.id||currentUser.email:"demo-user-001";
   try{
-    if(sizeMB > LARGE_MB){
-      await uploadDirect(file, mime, fill);
-    } else {
-      await uploadBase64(file, mime, fill);
-    }
+    if(sizeMB>LARGE_MB){await uploadDirect(file,mime,fill,ownerId);}
+    else{await uploadBase64(file,mime,fill,ownerId);}
     fill.style.width="100%";
     setStatus("✅ Uploaded: "+file.name,"success");
-    setTimeout(()=>{ toast.classList.remove("show"); fill.style.width="0%"; },1000);
+    setTimeout(()=>{toast.classList.remove("show");fill.style.width="0%";},1000);
     loadGallery();
-  }catch(err){
-    setStatus("Upload error: "+err.message,"error");
-    toast.classList.remove("show");
-  }
+  }catch(err){setStatus("Upload error: "+err.message,"error");toast.classList.remove("show");}
 }
 
-// Direct PUT to Blob Storage (large files)
-async function uploadDirect(file, mime, fill){
+async function uploadDirect(file,mime,fill,ownerId){
   fill.style.width="40%";
-  const safeName = file.name.replace(/\s+/g,"_");
-  const blobUrl = BLOB_BASE+"/"+encodeURIComponent(safeName)+BLOB_SAS;
-  const putRes = await fetch(blobUrl,{method:"PUT",headers:{"x-ms-blob-type":"BlockBlob","Content-Type":mime},body:file});
-  if(!putRes.ok) throw new Error("Blob upload failed: "+putRes.status);
+  const safeName=file.name.replace(/\s+/g,"_");
+  const blobUrl=BLOB_BASE+"/"+encodeURIComponent(safeName)+BLOB_SAS;
+  const putRes=await fetch(blobUrl,{method:"PUT",headers:{"x-ms-blob-type":"BlockBlob","Content-Type":mime},body:file});
+  if(!putRes.ok)throw new Error("Blob upload failed: "+putRes.status);
   fill.style.width="75%";
-  const blobUri = BLOB_BASE+"/"+encodeURIComponent(safeName);
-  const metaRes = await fetch(UPLOAD_URL,{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({fileName:file.name,fileContent:"",mediaType:mime,ownerId:OWNER_ID,tags:[],blobUri})});
-  if(!metaRes.ok && metaRes.status!==201) throw new Error("Metadata save failed: "+metaRes.status);
+  const blobUri=BLOB_BASE+"/"+encodeURIComponent(safeName);
+  const metaRes=await fetch(UPLOAD_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fileName:file.name,fileContent:"",mediaType:mime,ownerId,tags:[],blobUri})});
+  if(!metaRes.ok&&metaRes.status!==201)throw new Error("Metadata save failed: "+metaRes.status);
 }
 
-// Base64 via Logic App (small files)
-async function uploadBase64(file, mime, fill){
+async function uploadBase64(file,mime,fill,ownerId){
   return new Promise((resolve,reject)=>{
-    const reader = new FileReader();
-    reader.onload = async(e)=>{
+    const reader=new FileReader();
+    reader.onload=async(e)=>{
       fill.style.width="55%";
-      const base64 = e.target.result.split(",")[1];
-      const blobUri = buildBlobUri(file.name);
+      const base64=e.target.result.split(",")[1];
+      const blobUri=buildBlobUri(file.name);
       try{
-        const res = await fetch(UPLOAD_URL,{method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({fileName:file.name,fileContent:base64,mediaType:mime,ownerId:OWNER_ID,tags:[],blobUri})});
-        if(res.ok||res.status===201) resolve();
+        const res=await fetch(UPLOAD_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fileName:file.name,fileContent:base64,mediaType:mime,ownerId,tags:[],blobUri})});
+        if(res.ok||res.status===201)resolve();
         else reject(new Error("Upload failed: HTTP "+res.status));
-      }catch(err){ reject(err); }
+      }catch(err){reject(err);}
     };
     reader.onerror=()=>reject(new Error("File read failed"));
     reader.readAsDataURL(file);
   });
 }
 
-// ── EDIT ──────────────────────────────────────────────────────────────────────
+// ── EDIT ───────────────────────────────────────────────────────────────────────
 function openEdit(idx){
-  const item = allItems[idx];
-  if(!item) return;
-  editId=item.id; editOwnerId=item.ownerId||OWNER_ID;
-  editBlobUri=item.blobUri; editMediaType=item.mediaType||"";
-  const tagsArr = Array.isArray(item.tags)?item.tags:(item.tags?String(item.tags).split(",").map(t=>t.trim()).filter(t=>t&&t!=="[]"):[]);
-  document.getElementById("editFileName").value = item.fileName||"";
-  document.getElementById("editTags").value = tagsArr.join(", ");
+  const item=allItems[idx];if(!item)return;
+  editId=item.id;editOwnerId=item.ownerId;editBlobUri=item.blobUri;editMediaType=item.mediaType||"";
+  const tagsArr=Array.isArray(item.tags)?item.tags:(item.tags?String(item.tags).split(",").map(t=>t.trim()).filter(t=>t&&t!=="[]"):[]);
+  document.getElementById("editFileName").value=item.fileName||"";
+  document.getElementById("editTags").value=tagsArr.join(", ");
   document.getElementById("editModal").classList.add("active");
 }
-
-function closeModal(){ document.getElementById("editModal").classList.remove("active"); editId=null; }
+function closeModal(){document.getElementById("editModal").classList.remove("active");editId=null;}
 
 async function saveEdit(){
-  if(!editId) return;
-  const fileName = document.getElementById("editFileName").value.trim();
-  const tags = document.getElementById("editTags").value.split(",").map(t=>t.trim()).filter(Boolean);
+  if(!editId)return;
+  const fileName=document.getElementById("editFileName").value.trim();
+  const tags=document.getElementById("editTags").value.split(",").map(t=>t.trim()).filter(Boolean);
   setStatus("Updating...","info");
   try{
-    const res = await fetch(UPDATE_URL,{method:"PUT",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({id:editId,ownerId:editOwnerId,fileName,blobUri:editBlobUri,mediaType:editMediaType,tags})});
-    if(res.ok||res.status===200){ setStatus("✅ Updated","success"); closeModal(); loadGallery(); }
+    const res=await fetch(UPDATE_URL,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:editId,ownerId:editOwnerId,fileName,blobUri:editBlobUri,mediaType:editMediaType,tags})});
+    if(res.ok||res.status===200){setStatus("✅ Updated","success");closeModal();loadGallery();}
     else setStatus("Update failed: "+res.status,"error");
-  }catch(err){ setStatus("Error: "+err.message,"error"); }
+  }catch(err){setStatus("Error: "+err.message,"error");}
 }
 
-// ── DELETE ────────────────────────────────────────────────────────────────────
+// ── DELETE ─────────────────────────────────────────────────────────────────────
 async function deleteItem(idx){
-  const item = allItems[idx];
-  if(!item||!confirm("Delete this asset? This cannot be undone.")) return;
+  const item=allItems[idx];
+  if(!item||!confirm("Delete this asset?"))return;
   setStatus("Deleting...","info");
   try{
-    const res = await fetch(DELETE_URL,{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({id:item.id,ownerId:item.ownerId||OWNER_ID})});
-    if(res.ok||res.status===204||res.status===200){ setStatus("✅ Deleted","success"); loadGallery(); }
+    const res=await fetch(DELETE_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:item.id,ownerId:item.ownerId})});
+    if(res.ok||res.status===204||res.status===200){setStatus("✅ Deleted","success");loadGallery();}
     else setStatus("Delete failed: "+res.status,"error");
-  }catch(err){ setStatus("Error: "+err.message,"error"); }
+  }catch(err){setStatus("Error: "+err.message,"error");}
 }
 
-// ── KEYBOARD & CLICK OUTSIDE ──────────────────────────────────────────────────
-document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closeLightbox(); closeModal(); }});
-document.getElementById("lightbox").addEventListener("click",function(e){ if(e.target===this) closeLightbox(); });
-document.getElementById("editModal").addEventListener("click",function(e){ if(e.target===this) closeModal(); });
+// ── EVENTS ─────────────────────────────────────────────────────────────────────
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeLightbox();closeModal();}});
+document.getElementById("lightbox").addEventListener("click",function(e){if(e.target===this)closeLightbox();});
+document.getElementById("editModal").addEventListener("click",function(e){if(e.target===this)closeModal();});
 
-// ── INIT ──────────────────────────────────────────────────────────────────────
-loadGallery();
+// Enter key on login/register
+document.getElementById("loginPassword").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});
+document.getElementById("registerPassword").addEventListener("keydown",e=>{if(e.key==="Enter")doRegister();});
 </script>
 </body>
 </html>
