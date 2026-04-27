@@ -93,8 +93,8 @@
     /* LIGHTBOX */
     .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:5000;flex-direction:column;align-items:center;justify-content:center;}
     .lightbox.active{display:flex;}
-    .lightbox img{max-width:92vw;max-height:85vh;border-radius:10px;object-fit:contain;display:block;}
-    .lightbox video{max-width:92vw;max-height:85vh;border-radius:10px;outline:none;}
+    .lightbox img{width:auto;height:auto;max-width:90vw;max-height:85vh;border-radius:10px;object-fit:contain;display:block;min-width:200px;}
+    .lightbox video{width:auto;height:auto;max-width:90vw;max-height:85vh;border-radius:10px;outline:none;}
     .lightbox-close{position:fixed;top:18px;right:22px;background:rgba(255,255,255,0.15);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5001;}
     .lightbox-name{color:rgba(255,255,255,0.55);font-size:13px;margin-top:14px;max-width:80vw;text-align:center;word-break:break-all;}
     /* UPLOAD PROGRESS */
@@ -301,10 +301,7 @@ function openImage(idx){
   // Reset image then set src
   img.src="";
   img.style.display="block";
-  img.style.maxWidth="92vw";
-  img.style.maxHeight="85vh";
-  img.style.objectFit="contain";
-  img.style.borderRadius="10px";
+
   document.getElementById("lbName").textContent = item.fileName||"";
   lb.classList.add("active");
   // Set src AFTER lightbox is visible so browser renders it
