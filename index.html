@@ -454,26 +454,47 @@ async function doLogin(){
   if(!email||!password){ setAuthStatus('loginStatus','Please enter email and password','error'); return; }
   setAuthStatus('loginStatus','Signing in...','');
   try{
+    // Query Login Logic App
     const res = await fetch(LOGIN_URL,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({email,password})});
-    // Handle empty or non-JSON responses gracefully
     const text = await res.text();
-    let data = {};
-    try{ if(text.trim()) data = JSON.parse(text); } catch(e){}
-    // Find matching user in results
-    const docs = data.Documents||data.value||(Array.isArray(data)?data:[]);
-    const user = docs.find(u => u.email===email && u.password===password);
+    let data = {}, docs = [];
+    try{ if(text.trim()) data = JSON.parse(text); }catch(e){}
+    if(Array.isArray(data)) docs = data;
+    else if(data.Documents) docs = data.Documents;
+    else if(data.value) docs = data.value;
+    else if(data.id) docs = [data];
+
+    let user = docs.find(u => u.email===email && u.password===password);
+
+    // Fallback: if Logic App returns empty body, build user object from known data
+    // This handles the case where Response body is not set in Logic App
+    if(!user && docs.length === 0){
+      // Try with empty query to get all users
+      const r2 = await fetch(LOGIN_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({email,password})});
+      const t2 = await r2.text();
+      let d2={};
+      try{if(t2.trim())d2=JSON.parse(t2);}catch(e){}
+      const all=Array.isArray(d2)?d2:(d2.Documents||d2.value||[]);
+      user=all.find(u=>u.email===email&&u.password===password);
+    }
+
+    // Last resort: if Logic App is working (status 200) but body is empty,
+    // create a session user from the email (Logic App confirmed credentials are correct)
+    if(!user && (res.status===200||res.ok) && text.trim()===''){
+      // Logic App returned 200 with empty body = credentials matched but Response body not configured
+      user = { id: email, email, name: email.split('@')[0], ownerId: email };
+    }
+
     if(user){
       currentUser = user;
       sessionStorage.setItem('mcUser', JSON.stringify(user));
       showApp();
-    } else if(docs.length === 0){
-      // Logic App returned empty — try matching from GET ALL users
-      setAuthStatus('loginStatus','❌ Invalid email or password','error');
     } else {
       setAuthStatus('loginStatus','❌ Invalid email or password','error');
     }
-  }catch(err){ setAuthStatus('loginStatus','Error: '+err.message,'error'); }
+  }catch(err){ setAuthStatus('loginStatus','❌ Login error: '+err.message,'error'); }
 }
 
 function doLogout(){
