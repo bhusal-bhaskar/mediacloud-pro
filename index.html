@@ -671,12 +671,14 @@ async function handleUpload(event){
 
 async function uploadDirect(file,mime,fill,ownerId){
   fill.style.width="40%";
-  const safeName=file.name.replace(/\s+/g,"_");
-  const blobUrl=BLOB_BASE+"/"+encodeURIComponent(safeName)+BLOB_SAS;
+  // Keep original filename, just encode for URL
+  const encodedName=encodeURIComponent(file.name);
+  const blobUrl=BLOB_BASE+"/"+encodedName+BLOB_SAS;
   const putRes=await fetch(blobUrl,{method:"PUT",headers:{"x-ms-blob-type":"BlockBlob","Content-Type":mime},body:file});
-  if(!putRes.ok)throw new Error("Blob upload failed: "+putRes.status);
+  if(!putRes.ok)throw new Error("Blob upload failed: "+putRes.status+" - "+await putRes.text());
   fill.style.width="75%";
-  const blobUri=BLOB_BASE+"/"+encodeURIComponent(safeName);
+  // Store the raw blob URL without SAS
+  const blobUri=BLOB_BASE+"/"+encodedName;
   const metaRes=await fetch(UPLOAD_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fileName:file.name,fileContent:"",mediaType:mime,ownerId,tags:[],blobUri})});
   if(!metaRes.ok&&metaRes.status!==201)throw new Error("Metadata save failed: "+metaRes.status);
 }
