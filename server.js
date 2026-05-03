@@ -7,8 +7,14 @@ const port = process.env.PORT || 3000;
 http.createServer((req, res) => {
   const filePath = path.join(__dirname, 'index.html');
   fs.readFile(filePath, (err, data) => {
-    if (err) { res.writeHead(404); res.end('Not found'); return; }
+    if (err) {
+      res.writeHead(404);
+      res.end('Not found');
+      return;
+    }
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.end(data);
   });
-}).listen(port);
+}).listen(port, () => {
+  console.log('MediaCloud Pro running on port ' + port);
+});
