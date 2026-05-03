@@ -671,14 +671,21 @@ async function handleUpload(event){
 
 async function uploadDirect(file,mime,fill,ownerId){
   fill.style.width="40%";
-  // Keep original filename, just encode for URL
-  const encodedName=encodeURIComponent(file.name);
-  const blobUrl=BLOB_BASE+"/"+encodedName+BLOB_SAS;
-  const putRes=await fetch(blobUrl,{method:"PUT",headers:{"x-ms-blob-type":"BlockBlob","Content-Type":mime},body:file});
-  if(!putRes.ok)throw new Error("Blob upload failed: "+putRes.status+" - "+await putRes.text());
+  const safeName=file.name.replace(/\s+/g,"_");
+  const blobUrl=BLOB_BASE+"/"+safeName+BLOB_SAS;
+  // Use XMLHttpRequest instead of fetch for large file uploads
+  await new Promise((resolve,reject)=>{
+    const xhr=new XMLHttpRequest();
+    xhr.open("PUT",blobUrl);
+    xhr.setRequestHeader("x-ms-blob-type","BlockBlob");
+    xhr.setRequestHeader("Content-Type",mime);
+    xhr.upload.onprogress=(e)=>{if(e.lengthComputable)fill.style.width=(40+Math.round(e.loaded/e.total*35))+"%";};
+    xhr.onload=()=>{if(xhr.status===201||xhr.status===200)resolve();else reject(new Error("Blob upload failed: "+xhr.status));};
+    xhr.onerror=()=>reject(new Error("Network error during upload"));
+    xhr.send(file);
+  });
   fill.style.width="75%";
-  // Store the raw blob URL without SAS
-  const blobUri=BLOB_BASE+"/"+encodedName;
+  const blobUri=BLOB_BASE+"/"+safeName;
   const metaRes=await fetch(UPLOAD_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fileName:file.name,fileContent:"",mediaType:mime,ownerId,tags:[],blobUri})});
   if(!metaRes.ok&&metaRes.status!==201)throw new Error("Metadata save failed: "+metaRes.status);
 }
