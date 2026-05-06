@@ -672,20 +672,34 @@ async function handleUpload(event){
 async function uploadDirect(file,mime,fill,ownerId){
   fill.style.width="40%";
   const safeName=file.name.replace(/\s+/g,"_");
-  const blobUrl=BLOB_BASE+"/"+safeName+BLOB_SAS;
-  // Use XMLHttpRequest instead of fetch for large file uploads
-  await new Promise((resolve,reject)=>{
-    const xhr=new XMLHttpRequest();
-    xhr.open("PUT",blobUrl);
-    xhr.setRequestHeader("x-ms-blob-type","BlockBlob");
-    xhr.setRequestHeader("Content-Type",mime);
-    xhr.upload.onprogress=(e)=>{if(e.lengthComputable)fill.style.width=(40+Math.round(e.loaded/e.total*35))+"%";};
-    xhr.onload=()=>{if(xhr.status===201||xhr.status===200)resolve();else reject(new Error("Blob upload failed: "+xhr.status));};
-    xhr.onerror=()=>reject(new Error("Network error during upload"));
-    xhr.send(file);
-  });
-  fill.style.width="75%";
   const blobUri=BLOB_BASE+"/"+safeName;
+  
+  // Upload using block blob chunking (4MB chunks)
+  const blockSize = 4*1024*1024; // 4MB per block
+  const totalBlocks = Math.ceil(file.size/blockSize);
+  const blockIds = [];
+  
+  for(let i=0;i<totalBlocks;i++){
+    const start=i*blockSize;
+    const end=Math.min(start+blockSize,file.size);
+    const chunk=file.slice(start,end);
+    const blockId=btoa("block-"+String(i).padStart(6,"0"));
+    blockIds.push(blockId);
+    
+    const blockUrl=blobUri+BLOB_SAS+"&comp=block&blockid="+encodeURIComponent(blockId);
+    const res=await fetch(blockUrl,{method:"PUT",headers:{"x-ms-blob-type":"BlockBlob","Content-Type":mime},body:chunk});
+    if(!res.ok)throw new Error("Block upload failed: "+res.status);
+    
+    fill.style.width=(40+Math.round((i+1)/totalBlocks*35))+"%";
+  }
+  
+  // Commit all blocks
+  const blockListXml='<?xml version="1.0" encoding="utf-8"?><BlockList>'+blockIds.map(id=>'<Latest>'+id+'</Latest>').join('')+'</BlockList>';
+  const commitUrl=blobUri+BLOB_SAS+"&comp=blocklist";
+  const commitRes=await fetch(commitUrl,{method:"PUT",headers:{"Content-Type":"application/xml"},body:blockListXml});
+  if(!commitRes.ok)throw new Error("Block commit failed: "+commitRes.status);
+  
+  fill.style.width="75%";
   const metaRes=await fetch(UPLOAD_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fileName:file.name,fileContent:"",mediaType:mime,ownerId,tags:[],blobUri})});
   if(!metaRes.ok&&metaRes.status!==201)throw new Error("Metadata save failed: "+metaRes.status);
 }
